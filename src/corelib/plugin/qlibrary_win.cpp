@@ -58,7 +58,7 @@ QStringList QLibraryPrivate::suffixes_sys(const QString& fullVersion)
 
 QStringList QLibraryPrivate::prefixes_sys()
 {
-    return QStringList();
+    return QStringList(QStringLiteral("lib"));
 }
 
 bool QLibraryPrivate::load_sys()
