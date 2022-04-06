@@ -327,52 +327,6 @@ defineTest(qtConfTest_detectPkgConfig) {
         }
     }
 
-    $$qtConfEvaluate("features.cross_compile") {
-        # cross compiling, check that pkg-config is set up sanely
-        sysroot = $$config.input.sysroot
-
-        pkgConfigLibdir = $$getenv("PKG_CONFIG_LIBDIR")
-        isEmpty(pkgConfigLibdir) {
-            isEmpty(sysroot) {
-                qtConfAddWarning("Cross compiling without sysroot. Disabling pkg-config")
-                return(false)
-            }
-            !exists("$$sysroot/usr/lib/pkgconfig") {
-                qtConfAddWarning( \
-                    "Disabling pkg-config since PKG_CONFIG_LIBDIR is not set and" \
-                    "the host's .pc files would be used (even if you set PKG_CONFIG_PATH)." \
-                    "Set this variable to the directory that contains target .pc files" \
-                    "for pkg-config to function correctly when cross-compiling or" \
-                    "use -pkg-config to override this test.")
-                return(false)
-            }
-
-            pkgConfigLibdir = $$sysroot/usr/lib/pkgconfig:$$sysroot/usr/share/pkgconfig
-            machineTuple = $$eval($${currentConfig}.tests.machineTuple.tuple)
-            !isEmpty(machineTuple): \
-                pkgConfigLibdir = "$$pkgConfigLibdir:$$sysroot/usr/lib/$$machineTuple/pkgconfig"
-
-            qtConfAddNote("PKG_CONFIG_LIBDIR automatically set to $$pkgConfigLibdir")
-        }
-        pkgConfigSysrootDir = $$getenv("PKG_CONFIG_SYSROOT_DIR")
-        isEmpty(pkgConfigSysrootDir) {
-            isEmpty(sysroot) {
-                qtConfAddWarning( \
-                    "Disabling pkg-config since PKG_CONFIG_SYSROOT_DIR is not set." \
-                    "Set this variable to your sysroot for pkg-config to function correctly when" \
-                    "cross-compiling or use -pkg-config to override this test.")
-                return(false)
-            }
-
-            pkgConfigSysrootDir = $$sysroot
-            qtConfAddNote("PKG_CONFIG_SYSROOT_DIR automatically set to $$pkgConfigSysrootDir")
-        }
-        $${1}.pkgConfigLibdir = $$pkgConfigLibdir
-        export($${1}.pkgConfigLibdir)
-        $${1}.pkgConfigSysrootDir = $$pkgConfigSysrootDir
-        export($${1}.pkgConfigSysrootDir)
-        $${1}.cache += pkgConfigLibdir pkgConfigSysrootDir
-    }
     $${1}.pkgConfig = $$pkgConfig
     export($${1}.pkgConfig)
     $${1}.cache += pkgConfig
