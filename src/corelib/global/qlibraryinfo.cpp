@@ -171,6 +171,34 @@ void QLibrarySettings::load()
     }
 }
 
+#ifdef Q_OS_WIN
+#include <windows.h>
+
+QString findMe()
+{
+    WCHAR path[MAX_PATH];
+    HMODULE handle;
+    if (GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS | GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+        reinterpret_cast<LPWSTR>(&findMe), &handle)) {
+        GetModuleFileNameW(handle, path, sizeof(path));
+        return QDir::fromNativeSeparators(QString::fromUtf16(reinterpret_cast<const ushort*>(path)));
+    }
+    return QString();
+}
+#endif
+
+QSettings *findQtConf(const QString &path)
+{
+    QDir pwd(path);
+    QString qtconfig = pwd.filePath(QLatin1String("qt5.conf"));
+    if (QFile::exists(qtconfig))
+        return new QSettings(qtconfig, QSettings::IniFormat);
+    qtconfig = pwd.filePath(QLatin1String("qt.conf"));
+    if (QFile::exists(qtconfig))
+        return new QSettings(qtconfig, QSettings::IniFormat);
+    return nullptr;
+}
+
 QSettings *QLibraryInfoPrivate::findConfiguration()
 {
 #ifdef QT_BUILD_QMAKE
@@ -197,13 +225,15 @@ QSettings *QLibraryInfoPrivate::findConfiguration()
     }
 #endif
     if (QCoreApplication::instance()) {
-        QDir pwd(QCoreApplication::applicationDirPath());
-        qtconfig = pwd.filePath(QLatin1String("qt5.conf"));
-        if (QFile::exists(qtconfig))
-            return new QSettings(qtconfig, QSettings::IniFormat);
-        qtconfig = pwd.filePath(QLatin1String("qt.conf"));
-        if (QFile::exists(qtconfig))
-            return new QSettings(qtconfig, QSettings::IniFormat);
+        QSettings *settings = findQtConf(QCoreApplication::applicationDirPath());
+        if (settings)
+            return settings;
+#ifdef Q_OS_WIN
+        QFileInfo fi(findMe());
+        settings = findQtConf(fi.absolutePath());
+        if (settings)
+            return settings;
+#endif
     }
 #endif
     return 0;     //no luck
