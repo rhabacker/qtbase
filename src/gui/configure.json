@@ -220,7 +220,8 @@
             "headers": "EGL/egl.h",
             "sources": [
                 { "type": "pkgConfig", "args": "egl" },
-                { "type": "makeSpec", "spec": "EGL" }
+                { "type": "makeSpec", "spec": "EGL" },
+                { "libs": "-lEGL", "condition": "config.win32" }
             ]
         },
         "freetype": {
