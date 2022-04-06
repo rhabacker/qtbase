@@ -256,8 +256,8 @@ mac {
             CMAKE_PRL_FILE_LOCATION_DEBUG = lib$${CMAKE_QT_STEM}d.prl
             CMAKE_PRL_FILE_LOCATION_RELEASE = lib$${CMAKE_QT_STEM}.prl
         } else {
-            CMAKE_IMPLIB_FILE_LOCATION_DEBUG = lib$${CMAKE_QT_STEM}d.a
-            CMAKE_IMPLIB_FILE_LOCATION_RELEASE = lib$${CMAKE_QT_STEM}.a
+            CMAKE_IMPLIB_FILE_LOCATION_DEBUG = lib$${CMAKE_QT_STEM}d.dll.a
+            CMAKE_IMPLIB_FILE_LOCATION_RELEASE = lib$${CMAKE_QT_STEM}.dll.a
         }
     } else {
         CMAKE_WINMAIN_FILE_LOCATION_DEBUG = qtmain$${QT_LIBINFIX}d.lib

@@ -259,7 +259,7 @@ void Win32MakefileGenerator::fixTargetExt()
     } else if (project->isActiveConfig("shared")) {
         project->values("LIB_TARGET").prepend(project->first("QMAKE_PREFIX_STATICLIB")
                                               + project->first("TARGET") + project->first("TARGET_VERSION_EXT")
-                                              + '.' + project->first("QMAKE_EXTENSION_STATICLIB"));
+                                              + '.' + project->first("QMAKE_EXTENSION_IMPLIB"));
         project->values("TARGET_EXT").append(project->first("TARGET_VERSION_EXT") + "."
                 + project->first("QMAKE_EXTENSION_SHLIB"));
         project->values("TARGET").first() = project->first("QMAKE_PREFIX_SHLIB") + project->first("TARGET");
