@@ -35,12 +35,21 @@ THE_TARGET = $$qt5LibraryTarget($$TARGET)
     MODULE_PRI = $$MODULE_QMAKE_OUTDIR/mkspecs/modules/qt_ext_$${MODULE}.pri
     ucmodule = $$upper($$MODULE)
 
-    win32|CONFIG(static, static|shared) {
+    CONFIG(static, static|shared) {
         prefix = $$QMAKE_PREFIX_STATICLIB
         suffix = $$QMAKE_EXTENSION_STATICLIB
+        _target = $$TARGET
     } else {
-        prefix = $$QMAKE_PREFIX_SHLIB
-        suffix = $$QMAKE_EXTENSION_SHLIB
+        win32 {
+            # fix duplicated prefix for libEGL and libGLESv2
+            _target = $$replace(TARGET, ^lib, )
+            prefix = $$QMAKE_PREFIX_IMPLIB
+            suffix = $$QMAKE_EXTENSION_IMPLIB
+        } else {
+            _target = $$TARGET
+            prefix = $$QMAKE_PREFIX_SHLIB
+            suffix = $$QMAKE_EXTENSION_SHLIB
+        }
     }
     CC_USES =
     LD_USES =
@@ -60,12 +69,12 @@ THE_TARGET = $$qt5LibraryTarget($$TARGET)
         "QMAKE_DEFINES_$${ucmodule} = $$val_escape(MODULE_DEFINES)"
     debug_and_release {
         win32: \
-            MODULE_DEBUG_LIBS = $$DESTDIR/$$prefix$${TARGET}d.$$suffix
+            MODULE_DEBUG_LIBS = $$DESTDIR/$$prefix$${_target}d.$$suffix
         else: darwin: \
-            MODULE_DEBUG_LIBS = $$DESTDIR/$$prefix$${TARGET}_debug.$$suffix
+            MODULE_DEBUG_LIBS = $$DESTDIR/$$prefix$${_target}_debug.$$suffix
         else: \
             error("'$$QMAKE_PLATFORM' does not do debug_and_release.")
-        MODULE_RELEASE_LIBS = $$DESTDIR/$$prefix$${TARGET}.$$suffix
+        MODULE_RELEASE_LIBS = $$DESTDIR/$$prefix$${_target}.$$suffix
         MODULE_PRI_CONT += \
             "QMAKE_LIBS_$${ucmodule} =" \  # Needed for the module to be recognized.
             "QMAKE_LIBS_$${ucmodule}_DEBUG = $$val_escape(MODULE_DEBUG_LIBS)" \
