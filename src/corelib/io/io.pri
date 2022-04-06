@@ -151,7 +151,7 @@ win32 {
             io/qwindowspipewriter_p.h
 
         SOURCES += \
-            io/qstandardpaths_win.cpp \
+            io/qstandardpaths_unix.cpp \
             io/qstorageinfo_win.cpp \
             io/qwindowspipereader.cpp \
             io/qwindowspipewriter.cpp

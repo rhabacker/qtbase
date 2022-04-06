@@ -49,6 +49,7 @@
 #include <private/qfilesystemengine_p.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <qlibraryinfo.h>
 
 #ifndef QT_BOOTSTRAPPED
 #include <qcoreapplication.h>
@@ -123,7 +124,11 @@ static bool checkXdgRuntimeDir(const QString &xdgRuntimeDir)
     };
 
     // http://standards.freedesktop.org/basedir-spec/latest/
+#ifdef Q_OS_WIN
+    const uint myUid = -2;
+#else
     const uint myUid = uint(geteuid());
+#endif
     const QFile::Permissions wantedPerms = QFile::ReadOwner | QFile::WriteOwner | QFile::ExeOwner;
     const QFileSystemMetaData::MetaDataFlags statFlags = QFileSystemMetaData::PosixStatFlags
                                                          | QFileSystemMetaData::LinkType;
@@ -134,7 +139,11 @@ static bool checkXdgRuntimeDir(const QString &xdgRuntimeDir)
     // A stat() before mkdir() that concluded it doesn't exist is a meaningless
     // result: we'd race against someone else attempting to create it.
     // ### QFileSystemEngine::createDirectory cannot take the extra mode argument.
+#if !defined(Q_OS_WIN) || defined(QT_BOOTSTRAPPED)
     if (QT_MKDIR(entry.nativeFilePath(), 0700) == 0)
+#else
+    if (QT_MKDIR(entry.nativeFilePath().toLocal8Bit().constData()) == 0)
+#endif
         return true;
     if (errno != EEXIST) {
         qErrnoWarning("QStandardPaths: error creating runtime directory '%ls'",
@@ -231,8 +240,12 @@ QString QStandardPaths::writableLocation(StandardLocation type)
         bool fromEnv = !xdgRuntimeDir.isEmpty();
         if (xdgRuntimeDir.isEmpty() || !checkXdgRuntimeDir(xdgRuntimeDir)) {
             // environment variable not set or is set to something unsuitable
+#ifdef Q_OS_WIN
+            const QString userName = QLatin1String(qgetenv("USERNAME"));
+#else
             const uint myUid = uint(geteuid());
             const QString userName = QFileSystemEngine::resolveUserName(myUid);
+#endif
             xdgRuntimeDir = QDir::tempPath() + QLatin1String("/runtime-") + userName;
 
             if (!fromEnv) {
@@ -351,23 +364,32 @@ QString QStandardPaths::writableLocation(StandardLocation type)
 
     return path;
 }
-
+#ifdef Q_OS_WIN
+  #define PathSeparator ';'
+#else
+  #define PathSeparator ':'
+#endif
 static QStringList xdgDataDirs()
 {
     QStringList dirs;
     // http://standards.freedesktop.org/basedir-spec/latest/
     QString xdgDataDirsEnv = QFile::decodeName(qgetenv("XDG_DATA_DIRS"));
     if (xdgDataDirsEnv.isEmpty()) {
+#ifdef Q_OS_WIN
+        QString prefix = QLibraryInfo::location(QLibraryInfo::PrefixPath);
+        dirs.append(prefix + QString::fromLatin1("/share"));
+#else
         dirs.append(QString::fromLatin1("/usr/local/share"));
         dirs.append(QString::fromLatin1("/usr/share"));
+#endif
     } else {
-        dirs = xdgDataDirsEnv.split(QLatin1Char(':'), QString::SkipEmptyParts);
+        dirs = xdgDataDirsEnv.split(QLatin1Char(PathSeparator), QString::SkipEmptyParts);
 
         // Normalize paths, skip relative paths
         QMutableListIterator<QString> it(dirs);
         while (it.hasNext()) {
             const QString dir = it.next();
-            if (!dir.startsWith(QLatin1Char('/')))
+            if (!QDir::isAbsolutePath(dir))
                 it.remove();
             else
                 it.setValue(QDir::cleanPath(dir));
@@ -389,10 +411,15 @@ static QStringList xdgConfigDirs()
     QStringList dirs;
     // http://standards.freedesktop.org/basedir-spec/latest/
     const QString xdgConfigDirs = QFile::decodeName(qgetenv("XDG_CONFIG_DIRS"));
-    if (xdgConfigDirs.isEmpty())
+    if (xdgConfigDirs.isEmpty()) {
+#ifdef Q_OS_WIN
+        QString prefix = QLibraryInfo::location(QLibraryInfo::PrefixPath);
+        dirs.append(prefix + QString::fromLatin1("/etc/xdg"));
+#else
         dirs.append(QString::fromLatin1("/etc/xdg"));
-    else
-        dirs = xdgConfigDirs.split(QLatin1Char(':'));
+#endif
+    } else
+        dirs = xdgConfigDirs.split(QLatin1Char(PathSeparator));
     return dirs;
 }
 
