@@ -288,7 +288,8 @@ void MingwMakefileGenerator::writeLibsPart(QTextStream &t)
           << fixLibFlags("LIBS").join(' ') << ' '
           << fixLibFlags("LIBS_PRIVATE").join(' ') << ' '
           << fixLibFlags("QMAKE_LIBS").join(' ') << ' '
-          << fixLibFlags("QMAKE_LIBS_PRIVATE").join(' ') << endl;
+          << fixLibFlags("QMAKE_LIBS_PRIVATE").join(' ') << ' '
+          << fixLibFlags("QMAKE_LIBS_POST").join(' ') << endl;
     }
 }
 
