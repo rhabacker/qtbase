@@ -41,6 +41,11 @@ defineTest(qtConfTest_fxc) {
             }
         }
     }
+    cross_compile {
+        mingw {
+            fxc = $$qtConfFindInPath("$${CROSS_COMPILE}fxc")
+        }
+    }
 
     !isEmpty(fxc):exists($$fxc) {
         $${1}.value = $$clean_path($$fxc)
