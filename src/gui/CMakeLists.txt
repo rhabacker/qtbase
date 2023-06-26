@@ -973,6 +973,18 @@ qt_internal_extend_target(Gui
         "painting/qdrawhelper.cpp"
 )
 
+if(MINGW)
+    set_source_files_properties(
+        image/qimage.cpp
+        image/qimage_conversions.cpp
+        painting/qcolortransform.cpp
+        painting/qcompositionfunctions.cpp
+        painting/qdrawhelper.cpp
+        painting/qpixellayout.cpp
+        PROPERTIES COMPILE_FLAGS -msse2
+    )
+endif()
+
 qt_internal_extend_target(Gui CONDITION (QT_FEATURE_eglfs OR QT_FEATURE_xcb OR QT_FEATURE_direct2d OR WIN32)
     SOURCES
         util/qedidparser.cpp util/qedidparser_p.h
