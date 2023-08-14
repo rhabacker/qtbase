@@ -1,8 +1,6 @@
 // Copyright (C) 2021 The Qt Company Ltd.
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR GPL-3.0-only
 
-#undef QT_NO_FOREACH // this file contains unported legacy Q_FOREACH uses
-
 #include <QTest>
 #include <QtCore/QString>
 #include <QtCore/qarraydata.h>
@@ -418,7 +416,7 @@ struct Deallocator
 
     ~Deallocator()
     {
-        Q_FOREACH (QArrayData *data, headers)
+        for (QArrayData *data : std::as_const(headers))
             QArrayData::deallocate(data, objectSize, alignment);
     }
 
