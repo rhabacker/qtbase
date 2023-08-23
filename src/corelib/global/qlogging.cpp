@@ -1796,7 +1796,7 @@ static bool slog2_default_handler(QtMsgType type, const QMessageLogContext &,
 #if QT_CONFIG(journald)
 static bool systemd_default_message_handler(QtMsgType type,
                                             const QMessageLogContext &context,
-                                            const QString &formattedMessage)
+                                            const QString &message)
 {
     if (shouldLogToStderr())
         return false; // Leave logging up to stderr handler
@@ -1820,7 +1820,7 @@ static bool systemd_default_message_handler(QtMsgType type,
         break;
     }
 
-    sd_journal_send("MESSAGE=%s",     formattedMessage.toUtf8().constData(),
+    sd_journal_send("MESSAGE=%s",     message.toUtf8().constData(),
                     "PRIORITY=%i",    priority,
                     "CODE_FUNC=%s",   context.function ? context.function : "unknown",
                     "CODE_LINE=%d",   context.line,
@@ -2002,7 +2002,7 @@ static constexpr SystemMessageSink systemMessageSink = {
 #elif QT_CONFIG(slog2)
         slog2_default_handler
 #elif QT_CONFIG(journald)
-        systemd_default_message_handler
+        systemd_default_message_handler, true
 #elif QT_CONFIG(syslog)
         syslog_default_message_handler
 #elif defined(Q_OS_ANDROID)
