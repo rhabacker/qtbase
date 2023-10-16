@@ -6348,6 +6348,11 @@ bool QMetalSwapChain::isFormatSupported(Format f)
             return hdrInfo().limits.colorComponentValue.maxPotentialColorComponentValue > 1.0f;
         else
             return false;
+    } else if (f == HDR10) {
+        if (@available(iOS 16.0, *))
+            return hdrInfo().limits.colorComponentValue.maxPotentialColorComponentValue > 1.0f;
+        else
+            return false;
     } else if (f == HDRExtendedDisplayP3Linear) {
         return hdrInfo().limits.colorComponentValue.maxPotentialColorComponentValue > 1.0f;
     }
@@ -6390,6 +6395,11 @@ void QMetalSwapChain::chooseFormats()
     if (m_format == HDRExtendedSrgbLinear || m_format == HDRExtendedDisplayP3Linear) {
         d->colorFormat = MTLPixelFormatRGBA16Float;
         d->rhiColorFormat = QRhiTexture::RGBA16F;
+        return;
+    }
+    if (m_format == HDR10) {
+        d->colorFormat = MTLPixelFormatRGB10A2Unorm;
+        d->rhiColorFormat = QRhiTexture::RGB10A2;
         return;
     }
     d->colorFormat = m_flags.testFlag(sRGB) ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
@@ -6438,6 +6448,11 @@ bool QMetalSwapChain::createOrResize()
     if (m_format == HDRExtendedSrgbLinear) {
         if (@available(iOS 16.0, *)) {
             d->layer.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceExtendedLinearSRGB);
+            d->layer.wantsExtendedDynamicRangeContent = YES;
+        }
+    } else if (m_format == HDR10) {
+        if (@available(iOS 16.0, *)) {
+            d->layer.colorspace = CGColorSpaceCreateWithName(kCGColorSpaceITUR_2100_PQ);
             d->layer.wantsExtendedDynamicRangeContent = YES;
         }
     } else if (m_format == HDRExtendedDisplayP3Linear) {
