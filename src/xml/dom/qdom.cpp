@@ -649,22 +649,29 @@ void QDomNodeListPrivate::createList() const
     if (!node_impl)
         return;
 
+    list.clear();
     const QDomDocumentPrivate *const doc = node_impl->ownerDocument();
     if (doc && timestamp != doc->nodeListTime)
         timestamp = doc->nodeListTime;
+    forEachNode([&](QDomNodePrivate *p){ list.append(p); });
+}
+
+void QDomNodeListPrivate::forEachNode(qxp::function_ref<void(QDomNodePrivate*)> yield) const
+{
+    if (!node_impl)
+        return;
 
     QDomNodePrivate* p = node_impl->first;
 
-    list.clear();
     if (tagname.isNull()) {
         while (p) {
-            list.append(p);
+            yield(p);
             p = p->next;
         }
     } else if (nsURI.isNull()) {
         while (p && p != node_impl) {
             if (p->isElement() && p->nodeName() == tagname) {
-                list.append(p);
+                yield(p);
             }
             if (p->first)
                 p = p->first;
@@ -681,7 +688,7 @@ void QDomNodeListPrivate::createList() const
     } else {
         while (p && p != node_impl) {
             if (p->isElement() && p->name==tagname && p->namespaceURI==nsURI) {
-                list.append(p);
+                yield(p);
             }
             if (p->first)
                 p = p->first;
@@ -724,6 +731,13 @@ int QDomNodeListPrivate::length() const
         return 0;
 
     return list.size();
+}
+
+int QDomNodeListPrivate::noexceptLength() const noexcept
+{
+    int count = 0;
+    forEachNode([&](QDomNodePrivate*){ ++count; });
+    return count;
 }
 
 /**************************************************************
@@ -852,6 +866,16 @@ int QDomNodeList::length() const
 }
 
 /*!
+    Returns the number of nodes without creating the underlying QList.
+*/
+int QDomNodeList::noexceptLength() const noexcept
+{
+    if (!impl)
+        return 0;
+    return impl->noexceptLength();
+}
+
+/*!
     \fn bool QDomNodeList::isEmpty() const
 
     Returns \c true if the list contains no items; otherwise returns \c false.
@@ -879,6 +903,55 @@ int QDomNodeList::length() const
     If \a index is negative or if \a index >= length() then a null
     node is returned (i.e. a node for which QDomNode::isNull() returns
     true).
+*/
+
+/*!
+    \typedef QDomNodeList::const_iterator
+    \typedef QDomNodeList::const_reverse_iterator
+    \since 6.9
+
+    Typedefs for an opaque class that implements a (reverse) random-access
+    iterator over a QDomNodeList.
+
+    \note QDomNodeList does not support modifying nodes in-place, so
+    there is no mutable iterator.
+*/
+
+/*!
+    \typedef QDomNodeList::value_type
+    \typedef QDomNodeList::difference_type
+    \typedef QDomNodeList::size_type
+    \typedef QDomNodeList::reference
+    \typedef QDomNodeList::const_reference
+    \typedef QDomNodeList::pointer
+    \typedef QDomNodeList::const_pointer
+    \since 6.9
+
+    Provided for STL-compatibility.
+
+    \note QDomNodeList does not support modifying nodes in-place, so
+    reference and const_reference are the same type, as are pointer and
+    const_pointer.
+*/
+
+/*!
+    \fn QDomNodeList::begin() const
+    \fn QDomNodeList::end() const;
+    \fn QDomNodeList::rbegin() const
+    \fn QDomNodeList::rend() const;
+    \fn QDomNodeList::cbegin() const
+    \fn QDomNodeList::cend() const;
+    \fn QDomNodeList::crbegin() const
+    \fn QDomNodeList::crend() const;
+    \fn QDomNodeList::constBegin() const;
+    \fn QDomNodeList::constEnd() const;
+    \since 6.9
+
+    Returns a const_iterator or const_reverse_iterator, respectively, pointing
+    to the first or one past the last item in the list.
+
+    \note QDomNodeList does not support modifying nodes in-place, so
+    there is no mutable iterator.
 */
 
 /**************************************************************
