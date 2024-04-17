@@ -95,6 +95,8 @@ public:
     virtual bool participatesInLastWindowClosed() const;
     virtual bool treatAsVisible() const;
 
+    virtual void maybeSynthesizeContextMenuEvent(QMouseEvent *event);
+
     const QWindow *forwardToPopup(QEvent *event, const QWindow *activePopupOnPress);
 
     bool isPopup() const { return (windowFlags & Qt::WindowType_Mask) == Qt::Popup; }
