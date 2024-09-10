@@ -387,13 +387,15 @@ inline ulong getTimeStamp(UIEvent *event)
             qCDebug(lcQpaTablet) << i << ":" << timeStamp << localViewPosition << pressure << state << "azimuth" << azimuth.dx << azimuth.dy
                      << "angle" << azimuthAngle << "altitude" << cTouch.altitudeAngle
                      << "xTilt" << qBound(-60.0, altitudeAngle * azimuth.dx, 60.0) << "yTilt" << qBound(-60.0, altitudeAngle * azimuth.dy, 60.0);
-            QWindowSystemInterface::handleTabletEvent(self.platformWindow->window(), timeStamp, localViewPosition, globalScreenPosition,
-                    // device, pointerType, buttons
-                    int(QInputDevice::DeviceType::Stylus), int(QPointingDevice::PointerType::Pen), state == QEventPoint::State::Released ? Qt::NoButton : Qt::LeftButton,
+            QWindowSystemInterface::handleTabletEvent(self.platformWindow->window(), timeStamp,
+                    // device, local, global
+                    iosIntegration->pencilDevice(), localViewPosition, globalScreenPosition,
+                    // buttons
+                    state == QEventPoint::State::Released ? Qt::NoButton : Qt::LeftButton,
                     // pressure, xTilt, yTilt
                     pressure, qBound(-60.0, altitudeAngle * azimuth.dx, 60.0), qBound(-60.0, altitudeAngle * azimuth.dy, 60.0),
-                    // tangentialPressure, rotation, z, uid, modifiers
-                    0, azimuthAngle, 0, 0, Qt::NoModifier);
+                    // tangentialPressure, rotation, z, modifiers
+                    0, azimuthAngle, 0, Qt::NoModifier);
             ++i;
         }
     }

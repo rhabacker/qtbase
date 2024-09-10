@@ -72,6 +72,9 @@ public:
     QPlatformNativeInterface *nativeInterface() const override;
 
     QPointingDevice *touchDevice();
+#if QT_CONFIG(tabletevent)
+    QPointingDevice *pencilDevice();
+#endif
 #if QT_CONFIG(accessibility)
     QPlatformAccessibility *accessibility() const override;
 #endif
@@ -109,6 +112,9 @@ private:
 #endif
     QPlatformInputContext *m_inputContext;
     QPointingDevice *m_touchDevice;
+#if QT_CONFIG(tabletevent)
+    QPointingDevice *m_pencilDevice = nullptr;
+#endif
     QIOSServices *m_platformServices;
     mutable QPlatformAccessibility *m_accessibility;
     QFactoryLoader *m_optionalPlugins;
