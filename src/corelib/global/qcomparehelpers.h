@@ -1233,6 +1233,25 @@ constexpr bool compareThreeWayNoexcept() noexcept
 
 } // namespace CompareThreeWayTester
 
+#ifdef __cpp_lib_three_way_comparison
+[[maybe_unused]] inline constexpr struct { /* Niebloid */
+    template <typename LT, typename RT = LT>
+    [[maybe_unused]] constexpr auto operator()(const LT &lhs, const RT &rhs) const
+    {
+        // like [expos.only.entity]/2
+        if constexpr (QTypeTraits::has_operator_compare_three_way_with_v<LT, RT>) {
+            return lhs <=> rhs;
+        } else {
+            if (lhs < rhs)
+                return std::weak_ordering::less;
+            if (rhs < lhs)
+                return std::weak_ordering::greater;
+            return std::weak_ordering::equivalent;
+        }
+    }
+} synthThreeWay;
+#endif // __cpp_lib_three_way_comparison
+
 // These checks do not use Qt::compareThreeWay(), so only work for user-defined
 // compareThreeWay() helper functions.
 // We cannot use the same condition as in CompareThreeWayTester::hasCompareThreeWay,
