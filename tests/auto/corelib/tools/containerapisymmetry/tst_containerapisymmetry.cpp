@@ -487,6 +487,17 @@ private Q_SLOTS:
     { comparisonTest_impl<QList<const int *>, Qt::strong_ordering>(); }
     void comparisonTest_QList_LessOnly()
     { comparisonTest_impl<QList<LessOnly>, Qt::weak_ordering>(); }
+
+    void comparisonTest_QVarLengthArray_int()
+    { comparisonTest_impl<QVarLengthArray<int>, Qt::strong_ordering>(); }
+    void comparisonTest_QVarLengthArray_float()
+    { comparisonTest_impl<QVarLengthArray<float>, Qt::partial_ordering>(); }
+    void comparisonTest_QVarLengthArray_QDateTime()
+    { comparisonTest_impl<QVarLengthArray<QDateTime>, Qt::weak_ordering>(); }
+    void comparisonTest_QVarLengthArray_intptr()
+    { comparisonTest_impl<QVarLengthArray<const int *>, Qt::strong_ordering>(); }
+    void comparisonTest_QVarLengthArray_LessOnly()
+    { comparisonTest_impl<QVarLengthArray<LessOnly>, Qt::weak_ordering>(); }
 };
 
 void tst_ContainerApiSymmetry::init()
