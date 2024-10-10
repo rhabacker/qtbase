@@ -292,6 +292,8 @@ public:
     QString language;
     QString filePath;
 
+    bool load_translation(const QLocale &locale, const QString &filename, const QString &prefix,
+                          const QString &directory, const QString &suffix);
     bool do_load(const QString &filename, const QString &directory);
     bool do_load(const uchar *data, qsizetype len, const QString &directory);
     QString do_translate(const char *context, const char *sourceText, const char *comment,
@@ -596,21 +598,11 @@ bool QTranslatorPrivate::do_load(const QString &realname, const QString &directo
     return false;
 }
 
-Q_NEVER_INLINE
-static bool is_readable_file(const QString &name)
-{
-    const QFileInfo fi(name);
-    const bool isReadableFile = fi.isReadable() && fi.isFile();
-    qCDebug(lcTranslator) << "Testing file" << name << isReadableFile;
-
-    return isReadableFile;
-}
-
-static QString find_translation(const QLocale & locale,
-                                const QString & filename,
-                                const QString & prefix,
-                                const QString & directory,
-                                const QString & suffix)
+bool QTranslatorPrivate::load_translation(const QLocale &locale,
+                                          const QString &filename,
+                                          const QString &prefix,
+                                          const QString &directory,
+                                          const QString &suffix)
 {
     qCDebug(lcTranslator).noquote().nospace() << "Searching translation for "
                           << filename << prefix << locale << suffix
@@ -638,19 +630,21 @@ static QString find_translation(const QLocale & locale,
     const QStringList languages = locale.uiLanguages(QLocale::TagSeparator::Underscore);
     qCDebug(lcTranslator) << "Requested UI languages" << languages;
 
+    auto loadFile = [this, &realname, &directory] { return do_load(realname, directory); };
+
     for (const QString &localeName : languages) {
         QString loc = localeName;
         // First try this given name, then in lower-case form (if different):
         while (true) {
             // First, try with suffix:
             realname += loc + suffixOrDotQM;
-            if (is_readable_file(realname))
-                return realname;
+            if (loadFile())
+                return true;
 
             // Next, try without:
             realname.truncate(realNameBaseSize + loc.size());
-            if (is_readable_file(realname))
-                return realname;
+            if (loadFile())
+                return true;
             // Reset realname:
             realname.truncate(realNameBaseSize);
 
@@ -669,22 +663,18 @@ static QString find_translation(const QLocale & locale,
     if (!suffix.isNull()) {
         realname.replace(realNameBaseSizeFallbacks, prefix.size(), suffix);
         // realname == path + filename;
-        if (is_readable_file(realname))
-            return realname;
+        if (loadFile())
+            return true;
         realname.replace(realNameBaseSizeFallbacks, suffix.size(), prefix);
     }
 
     // realname == path + filename + prefix;
-    if (is_readable_file(realname))
-        return realname;
+    if (loadFile())
+        return true;
 
     realname.truncate(realNameBaseSizeFallbacks);
     // realname == path + filename;
-    if (is_readable_file(realname))
-        return realname;
-
-    realname.truncate(0);
-    return realname;
+    return loadFile();
 }
 
 /*!
@@ -738,8 +728,7 @@ bool QTranslator::load(const QLocale & locale,
 {
     Q_D(QTranslator);
     d->clear();
-    QString fname = find_translation(locale, filename, prefix, directory, suffix);
-    return !fname.isEmpty() && d->do_load(fname, directory);
+    return d->load_translation(locale, filename, prefix, directory, suffix);
 }
 
 /*!
