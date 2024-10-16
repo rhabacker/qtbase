@@ -329,8 +329,8 @@ public:
     }
 #endif //Q_QDOC
 
-    void dumpObjectTree() const;
-    void dumpObjectInfo() const;
+    Q_REVISION(6, 9) Q_INVOKABLE void dumpObjectTree() const;
+    Q_REVISION(6, 9) Q_INVOKABLE void dumpObjectInfo() const;
 
     QT_CORE_INLINE_SINCE(6, 6)
     bool setProperty(const char *name, const QVariant &value);
