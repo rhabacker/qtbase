@@ -1258,10 +1258,9 @@ QDebug &QDebug::putTupleLikeImplImpl(const char *ns, const char *what,
 
 /*!
     \since 6.7
-    \fn template <class T> QDebug operator<<(QDebug debug, const std::optional<T> &opt)
-    \relates QDebug
+    \fn template <class T, QDebug::if_streamable<T>> QDebug::operator<<(const std::optional<T> &opt)
 
-    Writes the contents of \a opt (or \c nullopt if not set) to \a debug.
+    Writes the contents of \a opt (or \c nullopt if not set) to this stream.
     \c T needs to support streaming into QDebug.
 */
 
