@@ -2927,6 +2927,22 @@ void tst_QHash::tryEmplace()
         QCOMPARE(hash.size(), 2);
         QCOMPARE(it->first, u"Uniquely"_s);
     }
+    // tryInsert (it just calls tryEmplace)
+    {
+        QHash<int, int> hash;
+        QHash<int, int>::TryEmplaceResult r = hash.tryInsert(0, 0);
+        QCOMPARE_NE(r.iterator, hash.end());
+        QCOMPARE(hash.size(), 1);
+        QCOMPARE(hash[0], 0);
+        QVERIFY(r.inserted);
+        QCOMPARE(*r.iterator, 0);
+        r = hash.tryInsert(0, 1);
+        QCOMPARE_NE(r.iterator, hash.end());
+        QCOMPARE(hash.size(), 1);
+        QCOMPARE(hash[0], 0);
+        QVERIFY(!r.inserted);
+        QCOMPARE(*r.iterator, 0);
+    }
 }
 
 struct BadKey {

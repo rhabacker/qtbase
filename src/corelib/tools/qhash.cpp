@@ -2377,7 +2377,23 @@ size_t qHash(long double key, size_t seed) noexcept
     // [use result.iterator...]
     \endcode
 
-    \sa emplace()
+    \sa emplace(), tryInsert()
+*/
+
+/*!
+    \fn template <class Key, class T> QHash<Key, T>::TryEmplaceResult QHash<Key, T>::tryInsert(const Key &key, const T &value)
+    \fn template <class Key, class T> template <typename K, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true> QHash<Key, T>::TryEmplaceResult QHash<Key, T>::tryInsert(K &&key, const T &value)
+    \since 6.9
+
+    Inserts a new item with the \a key and a value of \a value.
+    If an item with \a key already exists, no insertion takes place.
+
+    Returns an instance of \l{TryEmplaceResult}, a structure that holds an
+    \l{QHash::TryEmplaceResult::}{iterator} to the newly created item, or to the pre-existing item
+    that prevented the insertion, and a boolean, \l{QHash::TryEmplaceResult::}{inserted}, denoting
+    whether the insertion took place.
+
+    \sa insert(), tryEmplace()
 */
 
 /*!
@@ -2396,7 +2412,7 @@ size_t qHash(long double key, size_t seed) noexcept
 
     These functions are provided for compatibility with the standard library.
 
-    \sa emplace(), tryEmplace()
+    \sa emplace(), tryEmplace(), tryInsert()
 */
 
 /*!
@@ -2414,7 +2430,7 @@ size_t qHash(long double key, size_t seed) noexcept
 
     These functions are provided for compatibility with the standard library.
 
-    \sa emplace(), tryEmplace()
+    \sa emplace(), tryEmplace(), tryInsert()
 */
 
 /*! \fn template <class Key, class T> void QHash<Key, T>::insert(const QHash &other)

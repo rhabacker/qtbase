@@ -1379,6 +1379,11 @@ public:
         return tryEmplace_impl(std::move(key), std::forward<Args>(args)...);
     }
 
+    TryEmplaceResult tryInsert(const Key &key, const T &value)
+    {
+        return tryEmplace_impl(key, value);
+    }
+
     template <typename... Args>
     std::pair<key_value_iterator, bool> try_emplace(const Key &key, Args &&...args)
     {
@@ -1543,6 +1548,11 @@ public:
     TryEmplaceResult tryEmplace(K &&key, Args &&...args)
     {
         return tryEmplace_impl(std::forward<K>(key), std::forward<Args>(args)...);
+    }
+    template <typename K, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true>
+    TryEmplaceResult tryInsert(K &&key, const T &value)
+    {
+        return tryEmplace_impl(std::forward<K>(key), value);
     }
     template <typename K, typename... Args, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true>
     std::pair<key_value_iterator, bool> try_emplace(K &&key, Args &&...args)
