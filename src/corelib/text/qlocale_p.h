@@ -552,10 +552,8 @@ public:
 
     [[nodiscard]] QLocale::MeasurementSystem measurementSystem() const;
 
-#if QT_CONFIG(icu) || (defined(Q_OS_WIN) && !defined(QT_BOOTSTRAPPED))
     [[nodiscard]] QString toUpper(const QString &str, bool *ok) const;
     [[nodiscard]] QString toLower(const QString &str, bool *ok) const;
-#endif
 
     // System locale has an m_data all its own; all others have m_data = locale_data + m_index
     const QLocaleData *const m_data;

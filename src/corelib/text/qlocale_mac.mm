@@ -697,4 +697,40 @@ QVariant QSystemLocale::query(QueryType type, QVariant &&in) const
 
 #endif // QT_NO_SYSTEMLOCALE
 
+#if !QT_CONFIG(icu)
+
+static QString localeConvertString(const QByteArray &localeID, const QString &str, bool *ok,
+                                   bool toLowerCase)
+{
+    QMacAutoReleasePool pool;
+    Q_ASSERT(ok);
+    NSString *localestring = [[NSString alloc] initWithData:localeID.toNSData()
+                                                   encoding:NSUTF8StringEncoding];
+    NSLocale *locale = [NSLocale localeWithLocaleIdentifier:localestring];
+    if (!locale) {
+        *ok = false;
+        return QString();
+    }
+    *ok = true;
+    NSString *nsstring = str.toNSString();
+    if (toLowerCase)
+        nsstring = [nsstring lowercaseStringWithLocale:locale];
+    else
+        nsstring = [nsstring uppercaseStringWithLocale:locale];
+
+    return QString::fromNSString(nsstring);
+}
+
+QString QLocalePrivate::toLower(const QString &str, bool *ok) const
+{
+    return localeConvertString(bcp47Name('-'), str, ok, true);
+}
+
+QString QLocalePrivate::toUpper(const QString &str, bool *ok) const
+{
+    return localeConvertString(bcp47Name('-'), str, ok, false);
+}
+
+#endif
+
 QT_END_NAMESPACE

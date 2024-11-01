@@ -3563,7 +3563,7 @@ Qt::LayoutDirection QLocale::textDirection() const
 */
 QString QLocale::toUpper(const QString &str) const
 {
-#if !defined(QT_BOOTSTRAPPED) && (QT_CONFIG(icu) || defined(Q_OS_WIN))
+#if !defined(QT_BOOTSTRAPPED) && (QT_CONFIG(icu) || defined(Q_OS_WIN) || defined(Q_OS_APPLE))
     bool ok = true;
     QString result = d->toUpper(str, &ok);
     if (ok)
@@ -3587,7 +3587,7 @@ QString QLocale::toUpper(const QString &str) const
 */
 QString QLocale::toLower(const QString &str) const
 {
-#if !defined(QT_BOOTSTRAPPED) && (QT_CONFIG(icu) || defined(Q_OS_WIN))
+#if !defined(QT_BOOTSTRAPPED) && (QT_CONFIG(icu) || defined(Q_OS_WIN) || defined(Q_OS_APPLE))
     bool ok = true;
     const QString result = d->toLower(str, &ok);
     if (ok)

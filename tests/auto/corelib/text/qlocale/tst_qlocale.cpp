@@ -161,7 +161,7 @@ private slots:
     void lcsToCode();
     void codeToLcs();
 
-#if QT_CONFIG(icu) || defined(Q_OS_WIN)
+#if QT_CONFIG(icu) || defined(Q_OS_WIN) || defined(Q_OS_APPLE)
     void toLowerUpper_data();
     void toLowerUpper();
 
@@ -4777,7 +4777,7 @@ void tst_QLocale::codeToLcs()
     QCOMPARE(QLocale::codeToScript(QString("Hans")), QLocale::SimplifiedHanScript);
 }
 
-#if QT_CONFIG(icu) || defined(Q_OS_WIN)
+#if QT_CONFIG(icu) || defined(Q_OS_WIN) || defined(Q_OS_APPLE)
 void tst_QLocale::toLowerUpper_data()
 {
     QTest::addColumn<QLocale>("locale");
