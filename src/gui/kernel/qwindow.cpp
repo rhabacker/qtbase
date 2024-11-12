@@ -2784,7 +2784,7 @@ void QWindowPrivate::maybeSynthesizeContextMenuEvent(QMouseEvent *event)
         && event->type() == QGuiApplicationPrivate::contextMenuEventType()) {
         QContextMenuEvent e(QContextMenuEvent::Mouse, event->scenePosition().toPoint(),
                             event->globalPosition().toPoint(), event->modifiers());
-        qCDebug(lcPopup) << "synthesized QContextMenuEvent after un-accepted" << event->type() << ":" << &e;
+        qCDebug(lcPopup) << "synthesized QContextMenuEvent after ignored" << event->type() << ":" << &e;
         QGuiApplication::sendEvent(q_func(), &e);
     }
 #endif
