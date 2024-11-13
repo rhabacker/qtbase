@@ -172,7 +172,7 @@ QObjectPrivate::QObjectPrivate(int version)
     isDeletingChildren = false;                 // set by deleteChildren()
     sendChildEvents = true;                     // if we should send ChildAdded and ChildRemoved events to parent
     receiveChildEvents = true;
-    postedEvents = 0;
+    postedEvents.storeRelaxed(0);
     extraData = nullptr;
     metaObject = nullptr;
     isWindow = false;
@@ -200,7 +200,7 @@ QObjectPrivate::~QObjectPrivate()
         }
     }
 
-    if (postedEvents)
+    if (postedEvents.loadRelaxed())
         QCoreApplication::removePostedEvents(q_ptr, 0);
 
     thisThreadData->deref();
