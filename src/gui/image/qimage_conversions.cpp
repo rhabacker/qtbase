@@ -17,11 +17,6 @@
 #include <qsemaphore.h>
 #include <qthreadpool.h>
 #include <private/qthreadpool_p.h>
-#ifdef Q_OS_WASM
-// WebAssembly has threads; however we can't block the main thread.
-#else
-#define QT_USE_THREAD_PARALLEL_IMAGE_CONVERSIONS
-#endif
 #endif
 
 #include <QtCore/q20utility.h>
@@ -212,11 +207,11 @@ void convert_generic(QImageData *dest, const QImageData *src, Qt::ImageConversio
         }
     };
 
-#ifdef QT_USE_THREAD_PARALLEL_IMAGE_CONVERSIONS
+#if QT_CONFIG(qtgui_threadpool)
     int segments = (qsizetype(src->width) * src->height) >> 16;
     segments = std::min(segments, src->height);
 
-    QThreadPool *threadPool = QThreadPoolPrivate::qtGuiInstance();
+    QThreadPool *threadPool = QGuiApplicationPrivate::qtGuiThreadPool();
     if (segments <= 1 || !threadPool || threadPool->contains(QThread::currentThread()))
         return convertSegment(0, src->height);
 
@@ -267,11 +262,11 @@ void convert_generic_over_rgb64(QImageData *dest, const QImageData *src, Qt::Ima
             destData += dest->bytes_per_line;
         }
     };
-#ifdef QT_USE_THREAD_PARALLEL_IMAGE_CONVERSIONS
+#if QT_CONFIG(qtgui_threadpool)
     int segments = (qsizetype(src->width) * src->height) >> 16;
     segments = std::min(segments, src->height);
 
-    QThreadPool *threadPool = QThreadPoolPrivate::qtGuiInstance();
+    QThreadPool *threadPool = QGuiApplicationPrivate::qtGuiThreadPool();
     if (segments <= 1 || !threadPool || threadPool->contains(QThread::currentThread()))
         return convertSegment(0, src->height);
 
@@ -321,11 +316,11 @@ void convert_generic_over_rgba32f(QImageData *dest, const QImageData *src, Qt::I
             destData += dest->bytes_per_line;
         }
     };
-#ifdef QT_USE_THREAD_PARALLEL_IMAGE_CONVERSIONS
+#if QT_CONFIG(qtgui_threadpool)
     int segments = (qsizetype(src->width) * src->height) >> 16;
     segments = std::min(segments, src->height);
 
-    QThreadPool *threadPool = QThreadPoolPrivate::qtGuiInstance();
+    QThreadPool *threadPool = QGuiApplicationPrivate::qtGuiThreadPool();
     if (segments <= 1 || !threadPool || threadPool->contains(QThread::currentThread()))
         return convertSegment(0, src->height);
 
@@ -434,10 +429,10 @@ bool convert_generic_inplace(QImageData *data, QImage::Format dst_format, Qt::Im
             destData += params.bytesPerLine;
         }
     };
-#ifdef QT_USE_THREAD_PARALLEL_IMAGE_CONVERSIONS
+#if QT_CONFIG(qtgui_threadpool)
     int segments = (qsizetype(data->width) * data->height) >> 16;
     segments = std::min(segments, data->height);
-    QThreadPool *threadPool = QThreadPoolPrivate::qtGuiInstance();
+    QThreadPool *threadPool = QGuiApplicationPrivate::qtGuiThreadPool();
     if (segments > 1 && threadPool && !threadPool->contains(QThread::currentThread())) {
         QSemaphore semaphore;
         int y = 0;
@@ -527,10 +522,10 @@ bool convert_generic_inplace_over_rgb64(QImageData *data, QImage::Format dst_for
             destData += params.bytesPerLine;
         }
     };
-#ifdef QT_USE_THREAD_PARALLEL_IMAGE_CONVERSIONS
+#if QT_CONFIG(qtgui_threadpool)
     int segments = (qsizetype(data->width) * data->height) >> 16;
     segments = std::min(segments, data->height);
-    QThreadPool *threadPool = QThreadPoolPrivate::qtGuiInstance();
+    QThreadPool *threadPool = QGuiApplicationPrivate::qtGuiThreadPool();
     if (segments > 1 && threadPool && !threadPool->contains(QThread::currentThread())) {
         QSemaphore semaphore;
         int y = 0;
@@ -621,10 +616,10 @@ bool convert_generic_inplace_over_rgba32f(QImageData *data, QImage::Format dst_f
             destData += params.bytesPerLine;
         }
     };
-#ifdef QT_USE_THREAD_PARALLEL_IMAGE_CONVERSIONS
+#if QT_CONFIG(qtgui_threadpool)
     int segments = (qsizetype(data->width) * data->height) >> 16;
     segments = std::min(segments, data->height);
-    QThreadPool *threadPool = QThreadPoolPrivate::qtGuiInstance();
+    QThreadPool *threadPool = QGuiApplicationPrivate::qtGuiThreadPool();
     if (segments > 1 && threadPool && !threadPool->contains(QThread::currentThread())) {
         QSemaphore semaphore;
         int y = 0;

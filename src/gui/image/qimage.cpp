@@ -35,7 +35,7 @@
 #include <private/qimage_p.h>
 #include <private/qfont_p.h>
 
-#if QT_CONFIG(thread)
+#if QT_CONFIG(qtgui_threadpool)
 #include <qsemaphore.h>
 #include <qthreadpool.h>
 #include <private/qthreadpool_p.h>
@@ -4908,7 +4908,7 @@ QImage Q_TRACE_INSTRUMENT(qtgui) QImage::transformed(const QTransform &matrix, Q
         }
         // Otherwise only use it when the scaling factor demands it, or the image is large enough to scale multi-threaded
         if (nonpaintable_scale_xform
-#if QT_CONFIG(thread) && !defined(Q_OS_WASM)
+#if QT_CONFIG(qtgui_threadpool)
             || (ws * hs) >= (1<<20)
 #endif
             ) {
@@ -5328,10 +5328,10 @@ void QImage::applyColorTransform(const QColorTransform &transform)
         };
     }
 
-#if QT_CONFIG(thread) && !defined(Q_OS_WASM)
+#if QT_CONFIG(qtgui_threadpool)
     int segments = (qsizetype(width()) * height()) >> 16;
     segments = std::min(segments, height());
-    QThreadPool *threadPool = QThreadPoolPrivate::qtGuiInstance();
+    QThreadPool *threadPool = QGuiApplicationPrivate::qtGuiThreadPool();
     if (segments > 1 && threadPool && !threadPool->contains(QThread::currentThread())) {
         QSemaphore semaphore;
         int y = 0;
@@ -5818,10 +5818,10 @@ QImage QImage::colorTransformed(const QColorTransform &transform, QImage::Format
         }
     }
 
-#if QT_CONFIG(thread) && !defined(Q_OS_WASM)
+#if QT_CONFIG(qtgui_threadpool)
     int segments = (qsizetype(width()) * height()) >> 16;
     segments = std::min(segments, height());
-    QThreadPool *threadPool = QThreadPoolPrivate::qtGuiInstance();
+    QThreadPool *threadPool = QGuiApplicationPrivate::qtGuiThreadPool();
     if (segments > 1 && threadPool && !threadPool->contains(QThread::currentThread())) {
         QSemaphore semaphore;
         int y = 0;

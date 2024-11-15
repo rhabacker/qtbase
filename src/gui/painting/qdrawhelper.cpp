@@ -27,11 +27,7 @@
 #include <qloggingcategory.h>
 #include <qmath.h>
 
-#if QT_CONFIG(thread) && !defined(Q_OS_WASM)
-#define QT_USE_THREAD_PARALLEL_FILLS
-#endif
-
-#if defined(QT_USE_THREAD_PARALLEL_FILLS)
+#if QT_CONFIG(qtgui_threadpool)
 #include <qsemaphore.h>
 #include <qthreadpool.h>
 #include <private/qthreadpool_p.h>
@@ -3963,10 +3959,10 @@ static void spanfill_from_first(QRasterBuffer *rasterBuffer, QPixelLayout::BPP b
 
 // -------------------- blend methods ---------------------
 
-#if defined(QT_USE_THREAD_PARALLEL_FILLS)
+#if QT_CONFIG(qtgui_threadpool)
 #define QT_THREAD_PARALLEL_FILLS(function) \
     const int segments = (count + 32) / 64; \
-    QThreadPool *threadPool = QThreadPoolPrivate::qtGuiInstance(); \
+    QThreadPool *threadPool = QGuiApplicationPrivate::qtGuiThreadPool(); \
     if (segments > 1 && qPixelLayouts[data->rasterBuffer->format].bpp >= QPixelLayout::BPP8 \
              && threadPool && !threadPool->contains(QThread::currentThread())) { \
         QSemaphore semaphore; \
