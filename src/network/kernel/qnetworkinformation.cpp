@@ -646,7 +646,7 @@ QNetworkInformation::Features QNetworkInformation::supportedFeatures() const
         \li networklistmanager
     \row
         \li Apple (macOS/iOS)
-        \li scnetworkreachability
+        \li applenetworkinformation
     \row
         \li Android
         \li android

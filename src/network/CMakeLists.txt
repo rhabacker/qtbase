@@ -255,7 +255,7 @@ qt_internal_extend_target(Network CONDITION APPLE
     SOURCES
         kernel/qnetconmonitor_darwin.mm
     LIBRARIES
-        ${FWSystemConfiguration}
+        ${FWNetwork}
 )
 
 qt_internal_extend_target(Network CONDITION QT_FEATURE_networklistmanager AND NOT IOS AND NOT MACOS
