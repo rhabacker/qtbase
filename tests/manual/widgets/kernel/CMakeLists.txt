@@ -3,4 +3,3 @@
 
 # add_subdirectory(qtooltip) # TODO: broken in dev
 add_subdirectory(layoutreplace)
-add_subdirectory(setscreen)
