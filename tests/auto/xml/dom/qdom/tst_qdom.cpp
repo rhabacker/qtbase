@@ -119,6 +119,7 @@ private slots:
     void testDomListComparisonCompiles();
     void testDomListComparison_data();
     void testDomListComparison();
+    void noCrashOnDeepNesting() const;
 
     void cleanupTestCase() const;
 
@@ -2399,6 +2400,22 @@ void tst_QDom::testDomListComparison()
     QFETCH(const bool, result);
 
     QT_TEST_EQUALITY_OPS(lhs, rhs, result);
+}
+
+// The fix of QTBUG-131151 crash
+void tst_QDom::noCrashOnDeepNesting() const
+{
+    const QString prefix = QFINDTESTDATA("testdata/");
+    if (prefix.isEmpty())
+        QFAIL("Cannot find testdata directory!");
+
+    QFile file(prefix + "/deeply-nested.svg");
+    QVERIFY(file.open(QIODevice::ReadOnly));
+    QDomDocument doc;
+    doc.setContent(&file);
+    QByteArray array = doc.toByteArray();
+    QVERIFY(array.size());
+    file.close();
 }
 
 QTEST_MAIN(tst_QDom)
