@@ -2862,6 +2862,34 @@ void tst_QHash::tryEmplace()
         QCOMPARE(hash[0], 0);
         QVERIFY(!inserted2);
         QCOMPARE(it->second, 0);
+
+        using KVIterator = decltype(hash)::key_value_iterator;
+        using PairReturn = std::pair<KVIterator, bool>; // Return-value of try_emplace
+
+        // Handle conversion _from_ the try_emplace return type.
+        QHash<int, int>::TryEmplaceResult t = hash.try_emplace(2, 2);
+        QCOMPARE(t.inserted, true);
+        QCOMPARE(t.iterator.value(), 2);
+        QCOMPARE(hash.size(), 3);
+
+        t = hash.try_emplace(2, -1);
+        QCOMPARE(t.inserted, false);
+        QCOMPARE(t.iterator.value(), 2);
+        QCOMPARE(hash.size(), 3);
+
+        // Handle conversion _to_ the try_emplace return type.
+        PairReturn p = hash.tryEmplace(1, -1);
+        QCOMPARE_NE(p.first, hash.keyValueEnd());
+        QCOMPARE(hash.size(), 3);
+
+        QVERIFY(!p.second);
+        QCOMPARE(p.first->second, 1);
+
+        p = hash.try_emplace(cref, -1);
+        QCOMPARE_NE(p.first, hash.keyValueEnd());
+        QCOMPARE(hash.size(), 3);
+        QVERIFY(!p.second);
+        QCOMPARE(p.first->second, 0);
     }
     {
         // Make sure any kind of resize is properly handled

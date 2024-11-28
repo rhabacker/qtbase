@@ -1255,6 +1255,24 @@ public:
     {
         QHash::iterator iterator;
         bool inserted;
+
+        TryEmplaceResult() = default;
+        // Generated SMFs are fine!
+        TryEmplaceResult(QHash::iterator it, bool b)
+            : iterator(it), inserted(b)
+        {
+        }
+
+        // Implicit conversion _from_ the return-type of try_emplace:
+        Q_IMPLICIT TryEmplaceResult(const std::pair<key_value_iterator, bool> &p)
+            : iterator(p.first.base()), inserted(p.second)
+        {
+        }
+        // Implicit conversion _to_ the return-type of try_emplace:
+        Q_IMPLICIT operator std::pair<key_value_iterator, bool>()
+        {
+            return { key_value_iterator(iterator), inserted };
+        }
     };
 
     iterator erase(const_iterator it)
@@ -1387,26 +1405,22 @@ public:
     template <typename... Args>
     std::pair<key_value_iterator, bool> try_emplace(const Key &key, Args &&...args)
     {
-        auto r = tryEmplace_impl(key, std::forward<Args>(args)...);
-        return {key_value_iterator(r.iterator), r.inserted};
+        return tryEmplace_impl(key, std::forward<Args>(args)...);
     }
     template <typename... Args>
     std::pair<key_value_iterator, bool> try_emplace(Key &&key, Args &&...args)
     {
-        auto r = tryEmplace_impl(std::move(key), std::forward<Args>(args)...);
-        return {key_value_iterator(r.iterator), r.inserted};
+        return tryEmplace_impl(std::move(key), std::forward<Args>(args)...);
     }
     template <typename... Args>
     key_value_iterator try_emplace(const_iterator /*hint*/, const Key &key, Args &&...args)
     {
-        auto r = tryEmplace_impl(key, std::forward<Args>(args)...);
-        return key_value_iterator(r.iterator);
+        return key_value_iterator(tryEmplace_impl(key, std::forward<Args>(args)...).iterator);
     }
     template <typename... Args>
     key_value_iterator try_emplace(const_iterator /*hint*/, Key &&key, Args &&...args)
     {
-        auto r = tryEmplace_impl(std::move(key), std::forward<Args>(args)...);
-        return key_value_iterator(r.iterator);
+        return key_value_iterator(tryEmplace_impl(std::move(key), std::forward<Args>(args)...).iterator);
     }
 
 private:
@@ -1557,14 +1571,12 @@ public:
     template <typename K, typename... Args, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true>
     std::pair<key_value_iterator, bool> try_emplace(K &&key, Args &&...args)
     {
-        auto r = tryEmplace_impl(std::forward<K>(key), std::forward<Args>(args)...);
-        return { key_value_iterator(r.iterator), r.inserted };
+        return tryEmplace_impl(std::forward<K>(key), std::forward<Args>(args)...);
     }
     template <typename K, typename... Args, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true>
     key_value_iterator try_emplace(const_iterator /*hint*/, K &&key, Args &&...args)
     {
-        auto r = tryEmplace_impl(std::forward<K>(key), std::forward<Args>(args)...);
-        return key_value_iterator(r.iterator);
+        return key_value_iterator(tryEmplace_impl(std::forward<K>(key), std::forward<Args>(args)...).iterator);
     }
 };
 
