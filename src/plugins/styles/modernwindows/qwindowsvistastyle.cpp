@@ -204,11 +204,12 @@ void QWindowsVistaStylePrivate::cleanup(bool force)
 
 bool QWindowsVistaStylePrivate::transitionsEnabled() const
 {
-    BOOL animEnabled = false;
-    if (SystemParametersInfo(SPI_GETCLIENTAREAANIMATION, 0, &animEnabled, 0))
-    {
-        if (animEnabled)
-            return true;
+    if (QApplication::desktopSettingsAware()) {
+        BOOL animEnabled = false;
+        if (SystemParametersInfo(SPI_GETCLIENTAREAANIMATION, 0, &animEnabled, 0)) {
+            if (animEnabled)
+                return true;
+        }
     }
     return false;
 }
