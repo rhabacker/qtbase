@@ -194,7 +194,7 @@ qt_internal_add_module(Core
         plugin/qfactoryloader.cpp plugin/qfactoryloader_p.h
         plugin/qplugin.h plugin/qplugin_p.h
         plugin/qpluginloader.cpp plugin/qpluginloader.h
-        plugin/quuid.cpp plugin/quuid.h
+        plugin/quuid.cpp plugin/quuid.h plugin/quuid_p.h
         serialization/qcborarray.h
         serialization/qcborcommon.cpp serialization/qcborcommon.h serialization/qcborcommon_p.h
         serialization/qcbordiagnostic.cpp
