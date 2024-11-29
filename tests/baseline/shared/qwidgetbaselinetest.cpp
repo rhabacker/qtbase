@@ -33,6 +33,7 @@ QWidgetBaselineTest::QWidgetBaselineTest()
 #endif
     // turn off animations and make the cursor flash time really long to avoid blinking
     QApplication::style()->setProperty("_qt_animation_time", QTime());
+    QApplication::style()->setProperty("_q_no_animation", true);
     QGuiApplication::styleHints()->setCursorFlashTime(50000);
 
     QByteArray appearanceBytes;

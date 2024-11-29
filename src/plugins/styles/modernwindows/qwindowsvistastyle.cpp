@@ -204,6 +204,9 @@ void QWindowsVistaStylePrivate::cleanup(bool force)
 
 bool QWindowsVistaStylePrivate::transitionsEnabled() const
 {
+    Q_Q(const QWindowsVistaStyle);
+    if (q->property("_q_no_animation").toBool())
+        return false;
     if (QApplication::desktopSettingsAware()) {
         BOOL animEnabled = false;
         if (SystemParametersInfo(SPI_GETCLIENTAREAANIMATION, 0, &animEnabled, 0)) {
