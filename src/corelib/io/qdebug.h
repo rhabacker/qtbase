@@ -25,11 +25,14 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <string_view>
 #include <set>
 #include <tuple>
 #include <QtCore/q20type_traits.h>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <unordered_map>
 #include <unordered_set>
@@ -446,7 +449,7 @@ inline QDebug operator<<(QDebug debug, const std::multiset<Key, Compare, Alloc> 
 }
 
 template <typename Key, typename Compare, typename Alloc>
-inline QDebug operator<<(QDebug debug, const std::set<Key, Compare, Alloc>& set)
+inline QDebug operator<<(QDebug debug, const std::set<Key, Compare, Alloc> &set)
 {
     return QtPrivate::printSequentialContainer(std::move(debug), "std::set", set);
 }
@@ -458,7 +461,7 @@ inline QDebug operator<<(QDebug debug, const std::unordered_map<Key, T, Hash, Ke
 }
 
 template <typename Key, typename Hash, typename KeyEqual, typename Alloc>
-inline QDebug operator<<(QDebug debug, const std::unordered_set<Key, Hash, KeyEqual, Alloc>& unordered_set)
+inline QDebug operator<<(QDebug debug, const std::unordered_set<Key, Hash, KeyEqual, Alloc> &unordered_set)
 {
     return QtPrivate::printSequentialContainer(std::move(debug), "std::unordered_set", unordered_set);
 }

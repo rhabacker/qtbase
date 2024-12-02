@@ -1211,8 +1211,8 @@ QDebug &QDebug::putTupleLikeImplImpl(const char *ns, const char *what,
     \relates QDebug
     \since 6.9
 
- Writes the contents of \a map to \a debug. Both \c Key and
- \c T need to support streaming into QDebug.
+    Writes the contents of \a map to \a debug. Both \c Key and
+    \c T need to support streaming into QDebug.
 */
 
 /*!
@@ -1220,10 +1220,9 @@ QDebug &QDebug::putTupleLikeImplImpl(const char *ns, const char *what,
     \relates QDebug
     \since 6.9
 
-Writes the contents of \a unordered_set to \a debug. The \c Key type
-needs to support streaming into QDebug.
+    Writes the contents of \a unordered_set to \a debug. The \c Key type
+    needs to support streaming into QDebug.
 */
-
 
 /*!
     \fn template <class Key, class T> QDebug operator<<(QDebug debug, const QHash<Key, T> &hash)
