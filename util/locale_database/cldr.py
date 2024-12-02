@@ -62,8 +62,6 @@ class CldrReader (object):
                 else:
                     self.grumble(f'Skipping likelySubtag "{got}" -> "{use}" ({e})\n')
                 continue
-            if not any(have):
-                continue
 
             give = (give[0],
                     # Substitute according to http://www.unicode.org/reports/tr35/#Likely_Subtags

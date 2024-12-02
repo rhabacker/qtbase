@@ -429,7 +429,7 @@ void tst_QLocale::defaulted_ctor()
         QCOMPARE(l.territory(), exp_country); \
     } while (false)
 
-    TEST_CTOR(AnyLanguage, AnyTerritory, defaultLanguage, defaultTerritory);
+    TEST_CTOR(AnyLanguage, AnyTerritory, QLocale::English, QLocale::UnitedStates);
     TEST_CTOR(C, AnyTerritory, QLocale::C, QLocale::AnyTerritory);
     TEST_CTOR(Aymara, AnyTerritory, defaultLanguage, defaultTerritory);
     TEST_CTOR(Aymara, France, defaultLanguage, defaultTerritory);
