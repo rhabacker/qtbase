@@ -893,6 +893,8 @@ void tst_QWidget::fontPropagation()
     QVERIFY(four->testAttribute(Qt::WA_SetFont));
 }
 
+// QPropagationTestWidget is not found in QApplicationPrivate::widgetPalettes
+// and therefore falls back to the system palette
 class QPropagationTestWidget : public QWidget
 {
     Q_OBJECT
