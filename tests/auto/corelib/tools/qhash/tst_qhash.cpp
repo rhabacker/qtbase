@@ -1938,6 +1938,27 @@ void tst_QHash::dont_need_default_constructor()
         QVERIFY(hash2.value(QString::number(i), Bar(-1)).j == 2 * i);
         QVERIFY(hash2.size() == i + 1);
     }
+
+    QHash<int, Bar> hash3;
+    for (int i = 0; i < 100; ++i) {
+        hash3.tryEmplace(i, Bar(2 * i));
+        QVERIFY(hash3.value(i, Bar(-1)).j == 2 * i);
+        QVERIFY(hash3.size() == i + 1);
+    }
+
+    QHash<int, Bar> hash4;
+    for (int i = 0; i < 100; ++i) {
+        hash4.tryInsert(i, Bar(2 * i));
+        QVERIFY(hash4.value(i, Bar(-1)).j == 2 * i);
+        QVERIFY(hash4.size() == i + 1);
+    }
+
+    QHash<int, Bar> hash5;
+    for (int i = 0; i < 100; ++i) {
+        hash5.insertOrAssign(i, Bar(2 * i));
+        QVERIFY(hash5.value(i, Bar(-1)).j == 2 * i);
+        QVERIFY(hash5.size() == i + 1);
+    }
 }
 
 void tst_QHash::qmultihash_specific()
