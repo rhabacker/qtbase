@@ -2377,7 +2377,7 @@ size_t qHash(long double key, size_t seed) noexcept
     // [use result.iterator...]
     \endcode
 
-    \sa emplace(), tryInsert()
+    \sa emplace(), tryInsert(), insertOrAssign()
 */
 
 /*!
@@ -2393,7 +2393,7 @@ size_t qHash(long double key, size_t seed) noexcept
     that prevented the insertion, and a boolean, \l{QHash::TryEmplaceResult::}{inserted}, denoting
     whether the insertion took place.
 
-    \sa insert(), tryEmplace()
+    \sa insert(), tryEmplace(), insertOrAssign()
 */
 
 /*!
@@ -2412,7 +2412,7 @@ size_t qHash(long double key, size_t seed) noexcept
 
     These functions are provided for compatibility with the standard library.
 
-    \sa emplace(), tryEmplace(), tryInsert()
+    \sa emplace(), tryEmplace(), tryInsert(), insertOrAssign()
 */
 
 /*!
@@ -2430,7 +2430,62 @@ size_t qHash(long double key, size_t seed) noexcept
 
     These functions are provided for compatibility with the standard library.
 
-    \sa emplace(), tryEmplace(), tryInsert()
+    \sa emplace(), tryEmplace(), tryInsert(), insertOrAssign()
+*/
+
+/*!
+    \fn template <class Key, class T> template <typename Value> QHash<Key, T>::TryEmplaceResult QHash<Key, T>::insertOrAssign(const Key &key, Value &&value)
+    \fn template <class Key, class T> template <typename Value> QHash<Key, T>::TryEmplaceResult QHash<Key, T>::insertOrAssign(Key &&key, Value &&value)
+    \fn template <class Key, class T> template <typename K, typename Value, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true> QHash<Key, T>::TryEmplaceResult QHash<Key, T>::insertOrAssign(K &&key, Value &&value)
+    \since 6.9
+
+    Attempts to insert an item with the \a key and \a value.
+    If an item with \a key already exists its value is overwritten with \a value.
+
+    Returns an instance of \l{TryEmplaceResult}, a structure that holds an
+    \l{QHash::TryEmplaceResult::}{iterator} to the item, and a boolean,
+    \l{QHash::TryEmplaceResult::}{inserted}, denoting whether the item was newly created (\c{true})
+    or if it previously existed (\c{false}).
+
+    \sa insert(), tryEmplace(), tryInsert()
+*/
+
+/*!
+    \fn template <class Key, class T> template <typename Value> std::pair<QHash<Key, T>::key_value_iterator, bool> QHash<Key, T>::insert_or_assign(const Key &key, Value &&value)
+    \fn template <class Key, class T> template <typename Value> std::pair<QHash<Key, T>::key_value_iterator, bool>  QHash<Key, T>::insert_or_assign(Key &&key, Value &&value)
+    \fn template <class Key, class T> template <typename K, typename Value, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true> std::pair<QHash<Key, T>::key_value_iterator, bool> QHash<Key, T>::insert_or_assign(K &&key, Value &&value)
+    \since 6.9
+
+    Attempts to insert an item with the \a key and \a value.
+    If an item with \a key already exists its value is overwritten with \a value.
+
+    Returns a pair consisting of an iterator pointing to the item, and a
+    boolean, denoting whether the item was newly created (\c{true}) or if it
+    previously existed (\c{false}).
+
+    These functions are provided for compatibility with the standard library.
+
+    \sa insert(), tryEmplace(), tryInsert(), insertOrAssign()
+*/
+
+/*!
+    \fn template <class Key, class T> template <typename Value> std::pair<QHash<Key, T>::key_value_iterator, bool> QHash<Key, T>::insert_or_assign(const_iterator hint, const Key &key, Value &&value)
+    \fn template <class Key, class T> template <typename Value> std::pair<QHash<Key, T>::key_value_iterator, bool>  QHash<Key, T>::insert_or_assign(const_iterator hint, Key &&key, Value &&value)
+    \fn template <class Key, class T> template <typename K, typename Value, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true> std::pair<QHash<Key, T>::key_value_iterator, bool> QHash<Key, T>::insert_or_assign(const_iterator hint, K &&key, Value &&value)
+    \since 6.9
+
+    Attempts to insert an item with the \a key and \a value.
+    If an item with \a key already exists its value is overwritten with \a value.
+
+    Returns a pair consisting of an iterator pointing to the item, and a
+    boolean, denoting whether the item was newly created (\c{true}) or if it
+    previously existed (\c{false}).
+
+    \a hint is ignored.
+
+    These functions are provided for compatibility with the standard library.
+
+    \sa insert(), tryEmplace(), insertOrAssign()
 */
 
 /*! \fn template <class Key, class T> void QHash<Key, T>::insert(const QHash &other)

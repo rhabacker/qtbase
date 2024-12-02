@@ -498,6 +498,14 @@ private Q_SLOTS:
     { comparisonTest_impl<QVarLengthArray<const int *>, Qt::strong_ordering>(); }
     void comparisonTest_QVarLengthArray_LessOnly()
     { comparisonTest_impl<QVarLengthArray<LessOnly>, Qt::weak_ordering>(); }
+
+private:
+    template <typename Container>
+    void insert_or_assign_impl() const;
+
+private Q_SLOTS:
+    void insert_or_assign_QHash() { insert_or_assign_impl<QHash<int, int>>(); }
+    void insert_or_assign_unordered_map() { insert_or_assign_impl<std::unordered_map<int, int>>(); }
 };
 
 void tst_ContainerApiSymmetry::init()
@@ -1515,6 +1523,33 @@ void tst_ContainerApiSymmetry::comparisonTest_impl()
         QVERIFY(lhs >= rhs);
 #endif
     }
+}
+
+template <typename Container>
+void tst_ContainerApiSymmetry::insert_or_assign_impl() const
+{
+    using K = typename Container::key_type;
+    using V = typename Container::mapped_type;
+    Container c;
+    auto p = c.insert_or_assign(K(), V());
+    QVERIFY(p.second);
+    QCOMPARE(p.first->first, K());
+    QCOMPARE(p.first->second, V());
+
+    auto it = c.insert_or_assign(c.begin(), K(), V() + 1);
+    QCOMPARE(it->first, K());
+    QCOMPARE(it->second, V() + 1);
+
+    K k{};
+    V v{};
+    p = c.insert_or_assign(k, v);
+    QVERIFY(!p.second);
+    QCOMPARE(p.first->first, K());
+    QCOMPARE(p.first->second, V());
+
+    it = c.insert_or_assign(c.begin(), k, v + 2);
+    QCOMPARE(it->first, K());
+    QCOMPARE(it->second, V() + 2);
 }
 
 QTEST_APPLESS_MAIN(tst_ContainerApiSymmetry)

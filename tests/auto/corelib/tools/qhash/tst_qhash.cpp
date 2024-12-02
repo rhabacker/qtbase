@@ -84,6 +84,8 @@ private slots:
     void emplace();
     void tryEmplace();
 
+    void insertOrAssign();
+
     void badHashFunction();
     void hashOfHash();
 
@@ -2970,6 +2972,93 @@ void tst_QHash::tryEmplace()
         QCOMPARE(hash[0], 0);
         QVERIFY(!r.inserted);
         QCOMPARE(*r.iterator, 0);
+    }
+}
+
+void tst_QHash::insertOrAssign()
+{
+    {
+        QHash<int, int> hash;
+        QHash<int, int>::TryEmplaceResult r = hash.insertOrAssign(0, 0);
+        QCOMPARE_NE(r.iterator, hash.end());
+        QCOMPARE(hash.size(), 1);
+        QCOMPARE(hash[0], 0);
+        QVERIFY(r.inserted);
+        QCOMPARE(*r.iterator, 0);
+
+        int cref = 0;
+        r = hash.insertOrAssign(cref, 1);
+        QCOMPARE_NE(r.iterator, hash.end());
+        QCOMPARE(hash.size(), 1);
+        QCOMPARE(hash[0], 1);
+        QVERIFY(!r.inserted);
+        QCOMPARE(*r.iterator, 1);
+    }
+    // insert_or_assign (stdlib compat)
+    {
+        QHash<int, int> hash;
+        QHash<int, int>::TryEmplaceResult r = hash.insert_or_assign(0, 0);
+        QCOMPARE_NE(r.iterator, hash.end());
+        QCOMPARE(hash.size(), 1);
+        QCOMPARE(hash[0], 0);
+        QVERIFY(r.inserted);
+        QCOMPARE(*r.iterator, 0);
+
+        int cref = 0;
+        r = hash.insert_or_assign(cref, 1);
+        QCOMPARE_NE(r.iterator, hash.end());
+        QCOMPARE(hash.size(), 1);
+        QCOMPARE(hash[0], 1);
+        QVERIFY(!r.inserted);
+        QCOMPARE(*r.iterator, 1);
+
+        auto [it, inserted] = hash.insert_or_assign(1, 1);
+        QCOMPARE_NE(it, hash.keyValueEnd());
+        QCOMPARE(hash.size(), 2);
+        QCOMPARE(hash[1], 1);
+        QVERIFY(inserted);
+        QCOMPARE(it->second, 1);
+
+        cref = 1;
+        std::tie(it, inserted) = hash.insert_or_assign(cref, -1);
+        QCOMPARE_NE(it, hash.keyValueEnd());
+        QCOMPARE(hash.size(), 2);
+        QCOMPARE(hash[1], -1);
+        QVERIFY(!inserted);
+        QCOMPARE(it->second, -1);
+
+        // And with iterator hint:
+        it = hash.insert_or_assign(hash.end(), 0, -1);
+        QCOMPARE_NE(it, hash.keyValueEnd());
+        QCOMPARE(hash.size(), 2);
+        QCOMPARE(hash[1], -1);
+        QVERIFY(!inserted);
+        QCOMPARE(it->second, -1);
+
+        it = hash.insert_or_assign(hash.end(), cref, -2);
+        QCOMPARE_NE(it, hash.keyValueEnd());
+        QCOMPARE(hash.size(), 2);
+        QCOMPARE(hash[1], -2);
+        QVERIFY(!inserted);
+        QCOMPARE(it->second, -2);
+    }
+    {
+        // Heterogenous key
+        QHash<QString, int> hash;
+        auto r = hash.insertOrAssign(HeterogeneousHashingType{u"Hello World"_s}, 242);
+        QCOMPARE_NE(r.iterator, hash.end());
+        QVERIFY(r.inserted);
+        QCOMPARE(r.iterator.value(), 242);
+        QCOMPARE(hash.size(), 1);
+        QCOMPARE(r.iterator.key(), u"Hello World"_s);
+
+        HeterogeneousHashingType ctor{u"Uniquely"_s};
+        auto [it, inserted] = hash.insert_or_assign(ctor, 1);
+        QCOMPARE_NE(it, hash.keyValueEnd());
+        QVERIFY(inserted);
+        QCOMPARE(it->second, 1);
+        QCOMPARE(hash.size(), 2);
+        QCOMPARE(it->first, u"Uniquely"_s);
     }
 }
 

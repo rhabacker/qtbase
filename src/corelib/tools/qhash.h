@@ -1457,6 +1457,48 @@ private:
         return {iterator(bucket.toIterator(d)), shouldInsert};
     }
 public:
+    template <typename Value>
+    TryEmplaceResult insertOrAssign(const Key &key, Value &&value)
+    {
+        return insertOrAssign_impl(key, std::forward<Value>(value));
+    }
+    template <typename Value>
+    TryEmplaceResult insertOrAssign(Key &&key, Value &&value)
+    {
+        return insertOrAssign_impl(std::move(key), std::forward<Value>(value));
+    }
+    template <typename Value>
+    std::pair<key_value_iterator, bool> insert_or_assign(const Key &key, Value &&value)
+    {
+        return insertOrAssign_impl(key, std::forward<Value>(value));
+    }
+    template <typename Value>
+    std::pair<key_value_iterator, bool> insert_or_assign(Key &&key, Value &&value)
+    {
+        return insertOrAssign_impl(std::move(key), std::forward<Value>(value));
+    }
+    template <typename Value>
+    key_value_iterator insert_or_assign(const_iterator /*hint*/, const Key &key, Value &&value)
+    {
+        return key_value_iterator(insertOrAssign_impl(key, std::forward<Value>(value)).iterator);
+    }
+    template <typename Value>
+    key_value_iterator insert_or_assign(const_iterator /*hint*/, Key &&key, Value &&value)
+    {
+        return key_value_iterator(insertOrAssign_impl(std::move(key), std::forward<Value>(value)).iterator);
+    }
+
+private:
+    template <typename K, typename Value>
+    TryEmplaceResult insertOrAssign_impl(K &&key, Value &&value)
+    {
+        auto r = tryEmplace(std::forward<K>(key), std::forward<Value>(value));
+        if (!r.inserted)
+            *r.iterator = std::forward<Value>(value); // `value` is untouched if we get here
+        return r;
+    }
+
+public:
 
     float load_factor() const noexcept { return d ? d->loadFactor() : 0; }
     static float max_load_factor() noexcept { return 0.5; }
@@ -1577,6 +1619,21 @@ public:
     key_value_iterator try_emplace(const_iterator /*hint*/, K &&key, Args &&...args)
     {
         return key_value_iterator(tryEmplace_impl(std::forward<K>(key), std::forward<Args>(args)...).iterator);
+    }
+    template <typename K, typename Value, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true>
+    TryEmplaceResult insertOrAssign(K &&key, Value &&value)
+    {
+        return insertOrAssign_impl(std::forward<K>(key), std::forward<Value>(value));
+    }
+    template <typename K, typename Value, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true>
+    std::pair<key_value_iterator, bool> insert_or_assign(K &&key, Value &&value)
+    {
+        return insertOrAssign_impl(std::forward<K>(key), std::forward<Value>(value));
+    }
+    template <typename K, typename Value, if_heterogeneously_searchable<K> = true, if_key_constructible_from<K> = true>
+    key_value_iterator insert_or_assign(const_iterator /*hint*/, K &&key, Value &&value)
+    {
+        return key_value_iterator(insertOrAssign_impl(std::forward<K>(key), std::forward<Value>(value)).iterator);
     }
 };
 
