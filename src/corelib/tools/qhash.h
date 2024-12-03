@@ -945,6 +945,8 @@ public:
 #endif // Q_QDOC
 
     inline qsizetype size() const noexcept { return d ? qsizetype(d->size) : 0; }
+
+    [[nodiscard]]
     inline bool isEmpty() const noexcept { return !d || d->size == 0; }
 
     inline qsizetype capacity() const noexcept { return d ? qsizetype(d->numBuckets >> 1) : 0; }
@@ -1442,6 +1444,7 @@ public:
     size_t bucket_count() const noexcept { return d ? d->numBuckets : 0; }
     static size_t max_bucket_count() noexcept { return Data::maxNumBuckets(); }
 
+    [[nodiscard]]
     inline bool empty() const noexcept { return isEmpty(); }
 
 private:
@@ -1708,6 +1711,7 @@ public:
 
     inline qsizetype size() const noexcept { return m_size; }
 
+    [[nodiscard]]
     inline bool isEmpty() const noexcept { return !m_size; }
 
     inline qsizetype capacity() const noexcept { return d ? qsizetype(d->numBuckets >> 1) : 0; }
@@ -2217,6 +2221,7 @@ public:
     size_t bucket_count() const noexcept { return d ? d->numBuckets : 0; }
     static size_t max_bucket_count() noexcept { return Data::maxNumBuckets(); }
 
+    [[nodiscard]]
     inline bool empty() const noexcept { return isEmpty(); }
 
     inline iterator replace(const Key &key, const T &value)
