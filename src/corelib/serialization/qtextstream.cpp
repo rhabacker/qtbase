@@ -2556,6 +2556,13 @@ QTextStream &QTextStream::operator<<(const void *ptr)
     return *this;
 }
 
+/*!
+    \fn QTextStream::operator bool() const
+    \since 6.10
+
+    Returns whether this stream has no errors (status() == \l{OK}).
+*/
+
 namespace Qt {
 
 /*!
