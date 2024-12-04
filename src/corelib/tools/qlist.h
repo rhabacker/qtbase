@@ -349,14 +349,8 @@ private:
     }
 
 #if defined(__cpp_lib_three_way_comparison) && defined(__cpp_lib_concepts)
-    template <typename Container, typename U = T>
-    using if_has_op_less_or_op_compare_three_way =
-            std::enable_if_t<
-                std::disjunction_v<QTypeTraits::has_operator_less_than_container<Container, U>,
-                                   QTypeTraits::has_operator_compare_three_way<U>>,
-            bool>;
-
-    template <typename U = T, if_has_op_less_or_op_compare_three_way<QList, U> = true>
+    template <typename U = T,
+              QtOrderingPrivate::if_has_op_less_or_op_compare_three_way<QList, U> = true>
     friend auto operator<=>(const QList &lhs, const QList &rhs)
     {
         return std::lexicographical_compare_three_way(lhs.begin(), lhs.end(),

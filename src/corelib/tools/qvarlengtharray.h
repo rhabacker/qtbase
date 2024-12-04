@@ -640,15 +640,8 @@ private:
     }
 
 #if defined(__cpp_lib_three_way_comparison) && defined(__cpp_lib_concepts)
-    template <typename U = T>
-    using if_has_op_less_or_op_compare_three_way =
-            std::enable_if_t<
-                std::disjunction_v<QTypeTraits::has_operator_less_than<U>,
-                                   QTypeTraits::has_operator_compare_three_way<U>>,
-            bool>;
-
     template <typename U = T, qsizetype Prealloc2 = Prealloc,
-              if_has_op_less_or_op_compare_three_way<U> = true>
+              QtOrderingPrivate::if_has_op_less_or_op_compare_three_way<QVarLengthArray, U> = true>
     friend auto
     operator<=>(const QVarLengthArray &lhs, const QVarLengthArray<T, Prealloc2> &rhs)
     {

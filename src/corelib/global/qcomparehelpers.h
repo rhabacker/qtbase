@@ -1250,6 +1250,13 @@ constexpr bool compareThreeWayNoexcept() noexcept
         }
     }
 } synthThreeWay;
+
+template <typename Container, typename T>
+using if_has_op_less_or_op_compare_three_way =
+        std::enable_if_t<
+                std::disjunction_v<QTypeTraits::has_operator_less_than_container<Container, T>,
+                                   QTypeTraits::has_operator_compare_three_way<T>>,
+                bool>;
 #endif // __cpp_lib_three_way_comparison
 
 // These checks do not use Qt::compareThreeWay(), so only work for user-defined
