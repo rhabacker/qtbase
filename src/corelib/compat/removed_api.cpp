@@ -1274,6 +1274,15 @@ QByteArray QMetaEnum::valueToKeys(int value) const
 }
 
 
+#include "qmutex.h"
+
+#if QT_CONFIG(thread)
+void QBasicMutex::destroyInternal(QMutexPrivate *d)
+{
+    return destroyInternal(static_cast<void *>(d));
+}
+#endif
+
 #include "qstring.h"
 
 QString QString::arg(qlonglong a, int fieldWidth, int base, QChar fillChar) const
