@@ -2120,6 +2120,7 @@ bool QGuiApplication::event(QEvent *e)
     return QCoreApplication::event(e);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
 /*!
     \internal
 */
@@ -2127,6 +2128,7 @@ bool QGuiApplication::compressEvent(QEvent *event, QObject *receiver, QPostEvent
 {
     return QCoreApplication::compressEvent(event, receiver, postedEvents);
 }
+#endif
 
 bool QGuiApplicationPrivate::sendQWindowEventToQPlatformWindow(QWindow *window, QEvent *event)
 {

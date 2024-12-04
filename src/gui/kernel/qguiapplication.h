@@ -163,7 +163,9 @@ Q_SIGNALS:
 #endif
 protected:
     bool event(QEvent *) override;
+#  if QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
     bool compressEvent(QEvent *, QObject *receiver, QPostEventList *) override;
+#  endif
 
     QGuiApplication(QGuiApplicationPrivate &p);
 

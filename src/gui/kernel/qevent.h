@@ -510,6 +510,7 @@ public:
 protected:
     QPoint m_pos, m_oldPos;
     friend class QApplication;
+    friend class QApplicationPrivate;
 };
 
 class Q_GUI_EXPORT QExposeEvent : public QEvent
@@ -556,6 +557,7 @@ public:
 protected:
     QSize m_size, m_oldSize;
     friend class QApplication;
+    friend class QApplicationPrivate;
 };
 
 

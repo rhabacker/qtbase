@@ -1686,7 +1686,14 @@ void QCoreApplication::postEvent(QObject *receiver, QEvent *event, int priority)
   \internal
   Returns \c true if \a event was compressed away (possibly deleted) and should not be added to the list.
 */
+#if QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
 bool QCoreApplication::compressEvent(QEvent *event, QObject *receiver, QPostEventList *postedEvents)
+{
+    return d_func()->compressEvent(event, receiver, postedEvents);
+}
+#endif
+
+bool QCoreApplicationPrivate::compressEvent(QEvent *event, QObject *receiver, QPostEventList *postedEvents)
 {
     Q_ASSERT(event);
     Q_ASSERT(receiver);

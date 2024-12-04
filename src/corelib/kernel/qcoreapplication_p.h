@@ -98,6 +98,7 @@ public:
 
     virtual void createEventDispatcher();
     virtual void eventDispatcherReady();
+    virtual bool compressEvent(QEvent *event, QObject *receiver, QPostEventList *postedEvents);
     static void removePostedEvent(QEvent *);
 #ifdef Q_OS_WIN
     static void removePostedTimerEvent(QObject *object, int timerId);

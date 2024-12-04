@@ -83,6 +83,7 @@ public:
 
 protected:
     friend class QApplication;
+    friend class QApplicationPrivate;
     QRegion m_region;
 };
 

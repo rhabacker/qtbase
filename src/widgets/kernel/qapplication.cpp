@@ -782,7 +782,14 @@ QWidget *QApplication::widgetAt(const QPoint &p)
 /*!
     \internal
 */
+#if QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
 bool QApplication::compressEvent(QEvent *event, QObject *receiver, QPostEventList *postedEvents)
+{
+    return d_func()->compressEvent(event, receiver, postedEvents);
+}
+#endif
+
+bool QApplicationPrivate::compressEvent(QEvent *event, QObject *receiver, QPostEventList *postedEvents)
 {
     // Only compress the following events:
     const QEvent::Type type = event->type();
@@ -795,7 +802,7 @@ bool QApplication::compressEvent(QEvent *event, QObject *receiver, QPostEventLis
     case QEvent::LanguageChange:
         break;
     default:
-        return QGuiApplication::compressEvent(event, receiver, postedEvents);
+        return QGuiApplicationPrivate::compressEvent(event, receiver, postedEvents);
     }
 
     for (const auto &postedEvent : std::as_const(*postedEvents)) {

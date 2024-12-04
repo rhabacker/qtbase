@@ -30,7 +30,9 @@ QT_BEGIN_NAMESPACE
 
 class QCoreApplicationPrivate;
 class QTranslator;
+#if QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
 class QPostEventList;
+#endif
 class QAbstractEventDispatcher;
 class QAbstractNativeEventFilter;
 class QEventLoopLocker;
@@ -211,7 +213,9 @@ Q_SIGNALS:
 protected:
     bool event(QEvent *) override;
 
+#  if QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
     virtual bool compressEvent(QEvent *, QObject *receiver, QPostEventList *);
+#  endif
 #endif // QT_NO_QOBJECT
 
 protected:
