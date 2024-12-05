@@ -70,11 +70,32 @@ private Q_SLOTS:
 
 private:
     void printTimeZone(const QTimeZone &tz);
-#if defined(QT_BUILD_INTERNAL) && QT_CONFIG(timezone)
+#if QT_CONFIG(timezone)
+#  if defined(QT_BUILD_INTERNAL)
     // Generic tests of privates, called by implementation-specific private tests:
     void testCetPrivate(const QTimeZonePrivate &tzp);
     void testEpochTranPrivate(const QTimeZonePrivate &tzp);
-#endif // QT_BUILD_INTERNAL && timezone backends
+#  endif // QT_BUILD_INTERNAL
+    // Where tzdb contains a link between zones in different territories, CLDR
+    // doesn't treat those as aliases for one another. For details see "Links in
+    // the tz database" at:
+    // https://www.unicode.org/reports/tr35/#time-zone-identifiers
+    // Some of these could be identified as equivalent by looking at metazone
+    // histories but, for now, we stick with CLDR's notion of alias.
+    const std::set<QByteArrayView> unAliasedLinks = {
+        // By continent:
+        "America/Kralendijk", "America/Lower_Princes", "America/Marigot", "America/St_Barthelemy",
+        "Antarctica/South_Pole",
+        "Arctic/Longyearbyen",
+        "Asia/Choibalsan",
+        "Atlantic/Jan_Mayen",
+        "Europe/Bratislava", "Europe/Busingen", "Europe/Mariehamn",
+        "Europe/Podgorica", "Europe/San_Marino", "Europe/Vatican",
+        // Assorted legacy abbreviations and POSIX zones:
+        "CET", "EET", "EST", "HST", "MET", "MST", "WET",
+        "CST6CDT", "EST5EDT", "MST7MDT", "PST8PDT",
+    };
+#endif // timezone backends
     // Set to true to print debug output, test Display Names and run long stress tests
     static constexpr bool debug = false;
 };
@@ -565,7 +586,8 @@ void tst_QTimeZone::isTimeZoneIdAvailable()
         QVERIFY2(QTimeZone::isTimeZoneIdAvailable(id), id);
         const QTimeZone zone(id);
         QVERIFY2(zone.isValid(), id);
-        QVERIFY2(zone.hasAlternativeName(id), zone.id() + " != " + id);
+        if (unAliasedLinks.find(id) == unAliasedLinks.end())
+            QVERIFY2(zone.hasAlternativeName(id), zone.id() + " != " + id);
     }
     // availableTimeZoneIds() doesn't list all possible offset IDs, but
     // isTimeZoneIdAvailable() should accept them.
@@ -998,7 +1020,8 @@ void tst_QTimeZone::stressTest()
     for (const QByteArray &id : idList) {
         QTimeZone testZone = QTimeZone(id);
         QCOMPARE(testZone.isValid(), true);
-        QVERIFY2(testZone.hasAlternativeName(id), testZone.id() + " != " + id);
+        if (unAliasedLinks.find(id) == unAliasedLinks.end())
+            QVERIFY2(testZone.hasAlternativeName(id), testZone.id() + " != " + id);
         QDateTime testDate = QDateTime(QDate(2015, 1, 1), QTime(0, 0), UTC);
         testZone.territory();
         testZone.comment();
