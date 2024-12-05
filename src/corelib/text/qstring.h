@@ -316,7 +316,12 @@ public:
     [[nodiscard]] QString arg(T a, int fieldWidth = 0, int base = 10,
                               QChar fillChar = u' ') const
     {
-        if constexpr (std::is_signed_v<T>)
+        using U = typename std::conditional<
+                // underlying_type_t<non-enum> is UB in C++17/SFINAE in C++20, so wrap:
+                std::is_enum_v<T>, std::underlying_type<T>,
+                                   q20::type_identity<T>
+            >::type::type;
+        if constexpr (std::is_signed_v<U>)
             return arg_impl(qlonglong(a), fieldWidth, base, fillChar);
         else
             return arg_impl(qulonglong(a), fieldWidth, base, fillChar);

@@ -6697,7 +6697,6 @@ void tst_QString::arg()
     // (unscoped) enums
     enum : int { FooS = -1 };
     enum : uint { FooU = 1 };
-    QEXPECT_FAIL("", "QTBUG-131906", Continue); // Qt 6.9 only
     QCOMPARE(s4.arg(FooS), QLatin1String("[-1]"));
     QCOMPARE(s4.arg(FooU), QLatin1String("[1]"));
 
