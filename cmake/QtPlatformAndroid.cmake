@@ -23,10 +23,6 @@ if (NOT IS_DIRECTORY "${ANDROID_SDK_ROOT}")
     message(FATAL_ERROR "Could not find ANDROID_SDK_ROOT or path is not a directory: ${ANDROID_SDK_ROOT}")
 endif()
 
-# This variable specifies the API level used for building Java code, it can be the same as Qt for
-# Android's maximum supported Android version or higher.
-set(QT_ANDROID_API_USED_FOR_JAVA "android-34")
-
 function(qt_internal_sort_android_platforms out_var)
     if(CMAKE_VERSION GREATER_EQUAL 3.18)
         set(platforms ${ARGN})
@@ -54,18 +50,18 @@ function(qt_internal_sort_android_platforms out_var)
     set("${out_var}" "${platforms}" PARENT_SCOPE)
 endfunction()
 
-macro(qt_internal_get_android_platform_version out_var android_platform)
-    string(REGEX REPLACE ".*-([0-9]+)$" "\\1" ${out_var} "${android_platform}")
-endmacro()
+# This variable specifies the API level used for building Java code, it can be the same as Qt for
+# Android's maximum supported Android version or higher.
+if(NOT QT_ANDROID_API_USED_FOR_JAVA)
+    set(QT_ANDROID_API_USED_FOR_JAVA "android-34")
+endif()
 
-_qt_internal_detect_latest_android_platform(android_platform_latest)
-if(android_platform_latest)
-    qt_internal_get_android_platform_version(latest_platform_version
-        "${android_platform_latest}")
-    qt_internal_get_android_platform_version(required_platform_version
-        "${QT_ANDROID_API_USED_FOR_JAVA}")
-
-    if("${latest_platform_version}" VERSION_GREATER "${required_platform_version}")
+set(jar_location "${ANDROID_SDK_ROOT}/platforms/${QT_ANDROID_API_USED_FOR_JAVA}/android.jar")
+if(NOT EXISTS "${jar_location}")
+    _qt_internal_detect_latest_android_platform(android_platform_latest)
+    if(android_platform_latest)
+        message(NOTICE "The default platform SDK ${QT_ANDROID_API_USED_FOR_JAVA} not found, "
+                        "using the latest installed ${android_platform_latest} instead.")
         set(QT_ANDROID_API_USED_FOR_JAVA ${android_platform_latest})
     endif()
 endif()
