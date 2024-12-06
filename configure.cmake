@@ -1478,8 +1478,8 @@ qt_configure_add_report_entry(
 )
 qt_configure_add_report_entry(
     TYPE WARNING
-    MESSAGE "Using Emscripten version ${QT_EMCC_RECOMMENDED_VERSION} with this Qt
-    may have issues. You have ${EMCC_VERSION}."
+    MESSAGE "Using Emscripten version ${EMCC_VERSION} with this Qt
+    may have issues. The recommended version is ${QT_EMCC_RECOMMENDED_VERSION}."
     CONDITION WASM AND ${EMCC_VERSION} VERSION_GREATER ${QT_EMCC_RECOMMENDED_VERSION}
 )
 qt_configure_add_report_entry(
