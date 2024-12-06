@@ -163,6 +163,7 @@ private slots:
     void fontPropagationDynamic();
     void palettePropagation();
     void palettePropagation2();
+    void palettePropagation3();
     void palettePropagationDynamic();
     void enabledPropagation();
     void ignoreKeyEventsWhenDisabled_QTBUG27417();
@@ -1142,7 +1143,6 @@ void tst_QWidget::palettePropagation2()
     static constexpr QColor sysPalToolTipBase(12, 13, 14);
     static constexpr QColor overridePalText(42, 43, 44);
     static constexpr QColor overridePalToolTipBase(45, 46, 47);
-    static constexpr QColor sysPalButton(99, 98, 97);
 
     // Check that only the application fonts apply.
     const QPalette &appPal = QApplication::palette();
@@ -1179,6 +1179,37 @@ void tst_QWidget::palettePropagation2()
         else if (i <= 5)
             QCOMPARE(children.at(i)->palette().color(QPalette::ToolTipBase), overridePalToolTipBase);
     }
+}
+
+void tst_QWidget::palettePropagation3() {
+    if (QGuiApplication::platformName().startsWith(QLatin1String("wayland"), Qt::CaseInsensitive))
+        QSKIP("Wayland: This fails. Figure out why.");
+
+    QWidget root;
+    root.setObjectName(QTest::currentTestFunction());
+    root.setWindowTitle(root.objectName());
+    root.resize(200, 200);
+
+    QWidget *parent = &root;
+    static constexpr int propagationIndex = 2;
+    QWidgetList children;
+    for (int i = 0; i < 6; ++i) {
+        QWidget *w = (propagationIndex == i) ? new QPropagationTestWidget(parent) : new QWidget(parent);
+        w->setObjectName(QString("Widget-%1").arg(i));
+        children << w;
+        parent = w;
+    }
+
+    root.show();
+    QVERIFY(QTest::qWaitForWindowExposed(&root));
+
+    // These colors are unlikely to be imposed on the default palette of
+    // QWidget ;-).
+    static constexpr QColor overridePalText(42, 43, 44);
+    static constexpr QColor overridePalToolTipBase(45, 46, 47);
+    static constexpr QColor sysPalButton(99, 98, 97);
+
+    const QPalette &appPal = QApplication::palette();
 
     // Replace the app palette for child2. Button should propagate but Text
     // should still be ignored. The previous ToolTipBase setting is gone.
@@ -1189,6 +1220,14 @@ void tst_QWidget::palettePropagation2()
     // Check that the above settings propagate correctly.
     waitForPolished(children);
     QCOMPARE(root.palette(), appPal);
+
+    // Set children.at(0)'s Text, and set ToolTipBase on children.at(4).
+    QPalette textPalette;
+    textPalette.setColor(QPalette::Text, overridePalText);
+    children.at(0)->setPalette(textPalette);
+    QPalette toolTipPalette;
+    toolTipPalette.setColor(QPalette::ToolTipBase, overridePalToolTipBase);
+    children.at(4)->setPalette(toolTipPalette);
 
     for (int i = 0; i < children.count(); i++) {
         QCOMPARE(children.at(i)->palette().color(QPalette::Text), overridePalText);
