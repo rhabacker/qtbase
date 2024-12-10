@@ -433,6 +433,7 @@ QMetaMethodBuilder QMetaObjectBuilder::addMethod(const QMetaMethod &prototype)
     method.setAccess(prototype.access());
     method.setAttributes(prototype.attributes());
     method.setRevision(prototype.revision());
+    method.setConst(prototype.isConst());
     return method;
 }
 
@@ -1729,7 +1730,7 @@ void QMetaMethodBuilder::setAttributes(int value)
 /*!
     Returns true if the method is const qualified.
  */
-int QMetaMethodBuilder::isConst() const
+bool QMetaMethodBuilder::isConst() const
 {
     QMetaMethodBuilderPrivate *d = d_func();
     if (!d)

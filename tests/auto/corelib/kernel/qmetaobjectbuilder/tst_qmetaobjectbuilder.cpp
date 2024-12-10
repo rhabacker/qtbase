@@ -108,7 +108,7 @@ public:
     };
     Q_DECLARE_FLAGS(SomethingFlag64, SomethingFlagEnum64)
 
-    Q_INVOKABLE Q_SCRIPTABLE void method1() {}
+    Q_INVOKABLE Q_SCRIPTABLE void method1() const {}
 
     QString prop() const { return QString(); }
     void setProp(const QString& v) { Q_UNUSED(v); }
@@ -219,6 +219,7 @@ void tst_QMetaObjectBuilder::method()
     QCOMPARE(nullMethod.attributes(), 0);
     QCOMPARE(nullMethod.revision(), 0);
     QCOMPARE(nullMethod.index(), 0);
+    QCOMPARE(nullMethod.isConst(),0);
 
     // Add a method and check its attributes.
     QMetaMethodBuilder method1 = builder.addMethod("foo(const QString&, int)");
@@ -232,6 +233,7 @@ void tst_QMetaObjectBuilder::method()
     QCOMPARE(method1.attributes(), 0);
     QCOMPARE(method1.revision(), 0);
     QCOMPARE(method1.index(), 0);
+    QCOMPARE(method1.isConst(),0);
     QCOMPARE(builder.methodCount(), 1);
 
     // Add another method and check again.
@@ -260,6 +262,7 @@ void tst_QMetaObjectBuilder::method()
     method1.setAccess(QMetaMethod::Private);
     method1.setAttributes(QMetaMethod::Cloned);
     method1.setRevision(123);
+    method1.setConst(true);
 
     // Check that method1 is changed, but method2 is not.
     QCOMPARE(method1.signature(), QByteArray("foo(QString,int)"));
@@ -272,6 +275,7 @@ void tst_QMetaObjectBuilder::method()
     QCOMPARE(method1.attributes(), QMetaMethod::Cloned);
     QCOMPARE(method1.revision(), 123);
     QCOMPARE(method1.index(), 0);
+    QCOMPARE(method1.isConst(),true);
     QCOMPARE(method2.signature(), QByteArray("bar(QString)"));
     QCOMPARE(method2.methodType(), QMetaMethod::Method);
     QCOMPARE(method2.returnType(), QByteArray("int"));
@@ -303,6 +307,7 @@ void tst_QMetaObjectBuilder::method()
     QCOMPARE(method1.attributes(), QMetaMethod::Cloned);
     QCOMPARE(method1.revision(), 123);
     QCOMPARE(method1.index(), 0);
+    QCOMPARE(method1.isConst(),true);
     QCOMPARE(method2.signature(), QByteArray("bar(QString)"));
     QCOMPARE(method2.methodType(), QMetaMethod::Method);
     QCOMPARE(method2.returnType(), QByteArray("QString"));
@@ -356,6 +361,7 @@ void tst_QMetaObjectBuilder::slot()
     QCOMPARE(method1.access(), QMetaMethod::Public);
     QCOMPARE(method1.attributes(), 0);
     QCOMPARE(method1.index(), 0);
+    QCOMPARE(method1.isConst(),0);
     QCOMPARE(builder.methodCount(), 1);
 
     // Add another slot and check again.
@@ -395,6 +401,7 @@ void tst_QMetaObjectBuilder::signal()
     QCOMPARE(method1.access(), QMetaMethod::Public);
     QCOMPARE(method1.attributes(), 0);
     QCOMPARE(method1.index(), 0);
+    QCOMPARE(method1.isConst(),0);
     QCOMPARE(builder.methodCount(), 1);
 
     // Add another signal and check again.
@@ -1181,6 +1188,9 @@ static bool sameMethod(const QMetaMethod& method1, const QMetaMethod& method2)
         return false;
 
     if (method1.revision() != method2.revision())
+        return false;
+
+    if (method1.isConst() != method2.isConst())
         return false;
 
     return true;
