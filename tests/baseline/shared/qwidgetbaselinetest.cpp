@@ -109,7 +109,26 @@ void QWidgetBaselineTest::cleanupTestCase()
 void QWidgetBaselineTest::makeVisible()
 {
     Q_ASSERT(window);
+
+    // prefer a screen with a 1.0 DPR
+    QScreen *preferredScreen = QGuiApplication::primaryScreen();
+    if (!qFuzzyCompare(QGuiApplication::primaryScreen()->devicePixelRatio(), 1.0)) {
+        for (const auto screen : QGuiApplication::screens()) {
+            if (qFuzzyCompare(screen->devicePixelRatio(), 1.0)) {
+                preferredScreen = screen;
+                break;
+            }
+        }
+    }
+
+    Q_ASSERT(preferredScreen);
+    const QRect preferredScreenRect = preferredScreen->availableGeometry();
+
+    background->setScreen(preferredScreen);
+    background->move(preferredScreenRect.topLeft());
     background->showMaximized();
+    window->setScreen(preferredScreen);
+    window->move(preferredScreenRect.topLeft());
     window->show();
     QApplicationPrivate::setActiveWindow(window);
     QVERIFY(QTest::qWaitForWindowActive(window));
