@@ -135,12 +135,18 @@ void patch_debugInInfoPlist(const QString &infoPlistPath)
     // Older versions of qmake may have the "_debug" binary as
     // the value for CFBundleExecutable. Remove it.
     QFile infoPlist(infoPlistPath);
-    infoPlist.open(QIODevice::ReadOnly);
-    QByteArray contents = infoPlist.readAll();
-    infoPlist.close();
-    infoPlist.open(QIODevice::WriteOnly | QIODevice::Truncate);
-    contents.replace("_debug", ""); // surely there are no legit uses of "_debug" in an Info.plist
-    infoPlist.write(contents);
+    if (infoPlist.open(QIODevice::ReadOnly)) {
+        QByteArray contents = infoPlist.readAll();
+        infoPlist.close();
+        if (infoPlist.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+            contents.replace("_debug", ""); // surely there are no legit uses of "_debug" in an Info.plist
+            infoPlist.write(contents);
+        } else {
+            LogError() << "failed to write Info.plist file" << infoPlistPath;
+        }
+    } else {
+        LogError() << "failed to read Info.plist file" << infoPlistPath;
+    }
 }
 
 OtoolInfo findDependencyInfo(const QString &binaryPath)
@@ -1233,8 +1239,7 @@ void createQtConf(const QString &appBundlePath)
         return;
     }
 
-    qtconf.open(QIODevice::WriteOnly);
-    if (qtconf.write(contents) != -1) {
+    if (qtconf.open(QIODevice::WriteOnly) && qtconf.write(contents) != -1) {
         LogNormal() << "Created configuration file:" << fileName;
         LogNormal() << "This file sets the plugin search path to" << appBundlePath + "/Contents/PlugIns";
     }
