@@ -321,6 +321,26 @@ inline const QDBusArgument &operator>>(const QDBusArgument &arg, std::pair<T1, T
     return arg;
 }
 
+template <typename... T>
+QDBusArgument &operator<<(QDBusArgument &argument, const std::tuple<T...> &tuple)
+{
+    static_assert(std::tuple_size_v<std::tuple<T...>> != 0, "D-Bus doesn't allow empty structs");
+    argument.beginStructure();
+    std::apply([&argument](const auto &...elements) { (argument << ... << elements); }, tuple);
+    argument.endStructure();
+    return argument;
+}
+
+template <typename... T>
+const QDBusArgument &operator>>(const QDBusArgument &argument, std::tuple<T...> &tuple)
+{
+    static_assert(std::tuple_size_v<std::tuple<T...>> != 0, "D-Bus doesn't allow empty structs");
+    argument.beginStructure();
+    std::apply([&argument](auto &...elements) { (argument >> ... >> elements); }, tuple);
+    argument.endStructure();
+    return argument;
+}
+
 QT_END_NAMESPACE
 
 #endif // QT_NO_DBUS
