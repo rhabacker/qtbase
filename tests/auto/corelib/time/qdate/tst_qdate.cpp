@@ -552,11 +552,9 @@ void tst_QDate::startOfDay_endOfDay_data()
 #if QT_CONFIG(timezone) && QT_CONFIG(timezone_tzdb) && defined(__GLIBCXX__)
     // The IANA-DB parser in libstdc++ (at least up to _GLIBCXX_RELEASE == 14) gets
     // a lot of zone-transitions wrong in C++20's tzdb :-(
-    constexpr BackendKludges GlibCxxNoStart = IgnoreStart;
     constexpr BackendKludges GlibCxxNoBoth = IgnoreBoth;
 #define KLUDGING
 #else
-    constexpr BackendKludges GlibCxxNoStart = Clean;
     constexpr BackendKludges GlibCxxNoBoth = Clean;
 #endif
     const QTimeZone UTC(QTimeZone::UTC);
