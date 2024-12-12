@@ -112,6 +112,9 @@ private:
     Q_DECLARE_JNI_NATIVE_METHOD_IN_CURRENT_SCOPE(safeAreaMarginsChanged)
 
     [[nodiscard]] QMutexLocker<QMutex> destructionGuard();
+
+    bool m_isFullscreen;
+    bool m_expandedToCutout;
 };
 
 QT_END_NAMESPACE
