@@ -803,12 +803,12 @@ void QWindowsTheme::refreshIconPixmapSizes()
 // Defined in qpixmap_win.cpp
 Q_GUI_EXPORT QPixmap qt_pixmapFromWinHICON(HICON icon);
 
-static QPixmap loadIconFromShell32(int resourceId, QSize size)
+static QPixmap loadIconFromShell32(int resourceId, QSizeF size)
 {
     if (const HMODULE hmod = QSystemLibrary::load(L"shell32")) {
         auto iconHandle =
             static_cast<HICON>(LoadImage(hmod, MAKEINTRESOURCE(resourceId),
-                                         IMAGE_ICON, size.width(), size.height(), 0));
+                                         IMAGE_ICON, int(size.width()), int(size.height()), 0));
         if (iconHandle) {
             QPixmap iconpixmap = qt_pixmapFromWinHICON(iconHandle);
             DestroyIcon(iconHandle);
@@ -818,7 +818,7 @@ static QPixmap loadIconFromShell32(int resourceId, QSize size)
     return QPixmap();
 }
 
-QPixmap QWindowsTheme::standardPixmap(StandardPixmap sp, const QSizeF &size) const
+QPixmap QWindowsTheme::standardPixmap(StandardPixmap sp, const QSizeF &pixmapSize) const
 {
     int resourceId = -1;
     SHSTOCKICONID stockId = SIID_INVALID;
@@ -907,19 +907,16 @@ QPixmap QWindowsTheme::standardPixmap(StandardPixmap sp, const QSizeF &size) con
         break;
     }
 
-    const auto dpr = qGuiApp->devicePixelRatio(); // Highest in the system
-
     if (stockId != SIID_INVALID) {
         SHSTOCKICONINFO iconInfo;
         memset(&iconInfo, 0, sizeof(iconInfo));
         iconInfo.cbSize = sizeof(iconInfo);
         stockFlags |= SHGSI_ICONLOCATION;
         if (SHGetStockIconInfo(stockId, stockFlags, &iconInfo) == S_OK) {
-            const auto iconSize = size.width() * dpr;
+            const auto iconSize = pixmapSize.width();
             HICON icon;
             if (SHDefExtractIcon(iconInfo.szPath, iconInfo.iIcon, 0, &icon, nullptr, iconSize) == S_OK) {
                 QPixmap pixmap = qt_pixmapFromWinHICON(icon);
-                pixmap.setDevicePixelRatio(dpr);
                 DestroyIcon(icon);
                 return pixmap;
             }
@@ -927,15 +924,13 @@ QPixmap QWindowsTheme::standardPixmap(StandardPixmap sp, const QSizeF &size) con
     }
 
     if (resourceId != -1) {
-        const QSize pixmapSize(size.width() * dpr, size.height() * dpr);
         QPixmap pixmap = loadIconFromShell32(resourceId, pixmapSize);
         if (!pixmap.isNull()) {
             if (sp == FileLinkIcon || sp == DirLinkIcon || sp == DirLinkOpenIcon) {
                 QPainter painter(&pixmap);
                 QPixmap link = loadIconFromShell32(30, pixmapSize);
-                painter.drawPixmap(0, 0, pixmapSize.width(), pixmapSize.height(), link);
+                painter.drawPixmap(0, 0, int(pixmapSize.width()), int(pixmapSize.height()), link);
             }
-            pixmap.setDevicePixelRatio(dpr);
             return pixmap;
         }
     }
@@ -948,7 +943,7 @@ QPixmap QWindowsTheme::standardPixmap(StandardPixmap sp, const QSizeF &size) con
             return pixmap;
     }
 
-    return QPlatformTheme::standardPixmap(sp, size);
+    return QPlatformTheme::standardPixmap(sp, pixmapSize);
 }
 
 enum { // Shell image list ids
