@@ -2141,11 +2141,10 @@ QRadialGradient::QRadialGradient(const QPointF &center, qreal centerRadius, cons
     m_data.radial.cx = center.x();
     m_data.radial.cy = center.y();
     m_data.radial.cradius = centerRadius;
-    m_data.radial.fradius = 0;
+    m_data.radial.fradius = focalRadius;
 
     m_data.radial.fx = focalPoint.x();
     m_data.radial.fy = focalPoint.y();
-    setFocalRadius(focalRadius);
 }
 
 /*!
@@ -2162,11 +2161,10 @@ QRadialGradient::QRadialGradient(qreal cx, qreal cy, qreal centerRadius, qreal f
     m_data.radial.cx = cx;
     m_data.radial.cy = cy;
     m_data.radial.cradius = centerRadius;
-    m_data.radial.fradius = 0;
+    m_data.radial.fradius = focalRadius;
 
     m_data.radial.fx = fx;
     m_data.radial.fy = fy;
-    setFocalRadius(focalRadius);
 }
 
 /*!
