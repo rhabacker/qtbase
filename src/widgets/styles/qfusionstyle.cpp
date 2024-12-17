@@ -1553,9 +1553,9 @@ void QFusionStyle::drawControl(ControlElement element, const QStyleOption *optio
                     font.setBold(true);
 
                 p->setFont(font);
-                const QFontMetrics fontMetrics(font);
+                const QFontMetricsF fontMetrics(font);
                 const QString textToDraw = fontMetrics.elidedText(s.left(tabIndex).toString(),
-                                                                  Qt::ElideMiddle, vTextRect.width(),
+                                                                  Qt::ElideMiddle, vTextRect.width() + 0.5f,
                                                                   text_flags);
                 if (dis && !act && proxy()->styleHint(SH_EtchDisabledText, option, widget)) {
                     p->setPen(menuitem->palette.light().color());
@@ -2957,11 +2957,11 @@ QSize QFusionStyle::sizeFromContents(ContentsType type, const QStyleOption *opti
             else if (menuItem->menuItemType == QStyleOptionMenuItem::SubMenu)
                 w += 2 * QStyleHelper::dpiScaled(QFusionStylePrivate::menuArrowHMargin, option);
             else if (menuItem->menuItemType == QStyleOptionMenuItem::DefaultItem) {
-                const QFontMetrics fm(menuItem->font);
+                const QFontMetricsF fm(menuItem->font);
                 QFont fontBold = menuItem->font;
                 fontBold.setBold(true);
-                const QFontMetrics fmBold(fontBold);
-                w += fmBold.horizontalAdvance(menuItem->text) - fm.horizontalAdvance(menuItem->text);
+                const QFontMetricsF fmBold(fontBold);
+                w += qCeil(fmBold.horizontalAdvance(menuItem->text) - fm.horizontalAdvance(menuItem->text));
             }
             const qreal dpi = QStyleHelper::dpi(option);
              // Windows always shows a check column
