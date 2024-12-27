@@ -206,28 +206,28 @@ public:
 
     static bool handleTabletEvent(QWindow *window, ulong timestamp, const QPointingDevice *device,
                                   const QPointF &local, const QPointF &global,
-                                  Qt::MouseButtons buttons, qreal pressure, int xTilt, int yTilt,
+                                  Qt::MouseButtons buttons, qreal pressure, qreal xTilt, qreal yTilt,
                                   qreal tangentialPressure, qreal rotation, int z, Qt::KeyboardModifiers modifiers = Qt::NoModifier);
     static bool handleTabletEvent(QWindow *window, const QPointingDevice *device,
                                   const QPointF &local, const QPointF &global,
-                                  Qt::MouseButtons buttons, qreal pressure, int xTilt, int yTilt,
+                                  Qt::MouseButtons buttons, qreal pressure, qreal xTilt, qreal yTilt,
                                   qreal tangentialPressure, qreal rotation, int z, Qt::KeyboardModifiers modifiers = Qt::NoModifier);
     static bool handleTabletEvent(QWindow *window, ulong timestamp, const QPointF &local, const QPointF &global,
-                                  int device, int pointerType, Qt::MouseButtons buttons, qreal pressure, int xTilt, int yTilt,
+                                  int device, int pointerType, Qt::MouseButtons buttons, qreal pressure, qreal xTilt, qreal yTilt,
                                   qreal tangentialPressure, qreal rotation, int z, qint64 uid,
                                   Qt::KeyboardModifiers modifiers = Qt::NoModifier);
     static bool handleTabletEvent(QWindow *window, const QPointF &local, const QPointF &global,
-                                  int device, int pointerType, Qt::MouseButtons buttons, qreal pressure, int xTilt, int yTilt,
+                                  int device, int pointerType, Qt::MouseButtons buttons, qreal pressure, qreal xTilt, qreal yTilt,
                                   qreal tangentialPressure, qreal rotation, int z, qint64 uid,
                                   Qt::KeyboardModifiers modifiers = Qt::NoModifier);
     static bool handleTabletEnterLeaveProximityEvent(QWindow *window, ulong timestamp, const QPointingDevice *device,
                                                      bool inProximity, const QPointF &local = QPointF(), const QPointF &global = QPointF(),
-                                                     Qt::MouseButtons buttons = {}, int xTilt = 0, int yTilt = 0,
+                                                     Qt::MouseButtons buttons = {}, qreal xTilt = 0, qreal yTilt = 0,
                                                      qreal tangentialPressure = 0, qreal rotation = 0, int z = 0,
                                                      Qt::KeyboardModifiers modifiers = Qt::NoModifier);
     static bool handleTabletEnterLeaveProximityEvent(QWindow *window, const QPointingDevice *device,
                                                      bool inProximity, const QPointF &local = QPointF(), const QPointF &global = QPointF(),
-                                                     Qt::MouseButtons buttons = {}, int xTilt = 0, int yTilt = 0,
+                                                     Qt::MouseButtons buttons = {}, qreal xTilt = 0 , qreal yTilt = 0,
                                                      qreal tangentialPressure = 0, qreal rotation = 0, int z = 0,
                                                      Qt::KeyboardModifiers modifiers = Qt::NoModifier);
 
