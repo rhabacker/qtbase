@@ -14,54 +14,62 @@
 QT_BEGIN_NAMESPACE
 
 class QJniObjectPrivate;
+class QJniObject;
+
+namespace QtJniTypes
+{
+namespace Detail
+{
+template <typename ...Args>
+struct LocalFrame {
+    mutable JNIEnv *env;
+    bool hasFrame = false;
+    explicit LocalFrame(JNIEnv *env = nullptr) noexcept
+        : env(env)
+    {
+    }
+    ~LocalFrame()
+    {
+        if (hasFrame)
+            env->PopLocalFrame(nullptr);
+    }
+    bool ensureFrame()
+    {
+        if (!hasFrame)
+            hasFrame = jniEnv()->PushLocalFrame(sizeof...(Args)) == 0;
+        return hasFrame;
+    }
+    template <typename T>
+    auto newLocalRef(jobject object)
+    {
+        if (!ensureFrame()) {
+            // if the JVM is out of memory, avoid making matters worse
+            return T{};
+        }
+        return static_cast<T>(jniEnv()->NewLocalRef(object));
+    }
+    JNIEnv *jniEnv() const
+    {
+        if (!env)
+            env = QJniEnvironment::getJniEnv();
+        return env;
+    }
+    bool checkAndClearExceptions()
+    {
+        return env ? QJniEnvironment::checkAndClearExceptions(env) : false;
+    }
+    template <typename T>
+    auto convertToJni(T &&value);
+    template <typename T>
+    auto convertFromJni(QJniObject &&object);
+};
+}
+}
 
 class Q_CORE_EXPORT QJniObject
 {
-    friend class QJniArrayBase;
+    template <typename ...Args> using LocalFrame = QtJniTypes::Detail::LocalFrame<Args...>;
 
-    template <typename ...Args>
-    struct LocalFrame {
-        mutable JNIEnv *env;
-        bool hasFrame = false;
-        explicit LocalFrame(JNIEnv *env = nullptr) noexcept
-            : env(env)
-        {
-        }
-        ~LocalFrame()
-        {
-            if (hasFrame)
-                env->PopLocalFrame(nullptr);
-        }
-        bool ensureFrame()
-        {
-            if (!hasFrame)
-                hasFrame = jniEnv()->PushLocalFrame(sizeof...(Args)) == 0;
-            return hasFrame;
-        }
-        template <typename T>
-        auto newLocalRef(jobject object)
-        {
-            if (!ensureFrame()) {
-                // if the JVM is out of memory, avoid making matters worse
-                return T{};
-            }
-            return static_cast<T>(jniEnv()->NewLocalRef(object));
-        }
-        JNIEnv *jniEnv() const
-        {
-            if (!env)
-                env = QJniEnvironment::getJniEnv();
-            return env;
-        }
-        bool checkAndClearExceptions()
-        {
-            return env ? QJniEnvironment::checkAndClearExceptions(env) : false;
-        }
-        template <typename T>
-        auto convertToJni(T &&value);
-        template <typename T>
-        auto convertFromJni(QJniObject &&object);
-    };
 public:
     QJniObject();
     explicit QJniObject(const char *className);
@@ -867,7 +875,7 @@ static constexpr bool isReferenceWrapper = qxp::is_detected_v<IsReferenceWrapper
 
 template <typename ...Args>
 template <typename T>
-auto QJniObject::LocalFrame<Args...>::convertToJni(T &&value)
+auto QtJniTypes::Detail::LocalFrame<Args...>::convertToJni(T &&value)
 {
     using Type = q20::remove_cvref_t<T>;
     if constexpr (std::is_same_v<Type, QString>) {
@@ -892,7 +900,7 @@ auto QJniObject::LocalFrame<Args...>::convertToJni(T &&value)
 
 template <typename ...Args>
 template <typename T>
-auto QJniObject::LocalFrame<Args...>::convertFromJni(QJniObject &&object)
+auto QtJniTypes::Detail::LocalFrame<Args...>::convertFromJni(QJniObject &&object)
 {
     using Type = q20::remove_cvref_t<T>;
     if constexpr (std::is_same_v<Type, QString>) {

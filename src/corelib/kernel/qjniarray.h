@@ -569,8 +569,8 @@ protected:
                                         std::is_same<ElementType, QString>,
                                         std::is_base_of<QtJniTypes::JObjectBase, ElementType>
                              >) {
-            using ResultType = decltype(std::declval<QJniObject::LocalFrame<void>>().convertToJni(
-                                            std::declval<ElementType>()));
+            using ResultType = decltype(std::declval<QtJniTypes::Detail::LocalFrame<void>>()
+                                        .convertToJni(std::declval<ElementType>()));
             const auto className = QtJniTypes::Traits<ResultType>::className();
             jclass elementClass = env.findClass(className);
             if (!elementClass) {
@@ -907,9 +907,8 @@ template <typename List>
 auto QJniArrayBase::makeObjectArray(List &&list)
 {
     using ElementType = typename q20::remove_cvref_t<List>::value_type;
-    using ResultType = QJniArray<decltype(std::declval<QJniObject::LocalFrame<>>().convertToJni(
-                                    std::declval<ElementType>()))
-                                >;
+    using ResultType = QJniArray<decltype(std::declval<QtJniTypes::Detail::LocalFrame<>>()
+                                            .convertToJni(std::declval<ElementType>()))>;
 
     if (std::size(list) == 0)
         return ResultType();
@@ -935,7 +934,7 @@ auto QJniArrayBase::makeObjectArray(List &&list)
     }
 
     // explicitly manage the frame for local references in chunks of 100
-    QJniObject::LocalFrame frame(env);
+    QtJniTypes::Detail::LocalFrame frame(env);
     frame.hasFrame = true;
     constexpr jint frameCapacity = 100;
     qsizetype i = 0;
