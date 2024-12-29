@@ -19,7 +19,6 @@
 #if QT_CONFIG(easingcurve)
 #include "qeasingcurve.h"
 #endif
-#include "quuid.h"
 
 #if QT_CONFIG(regularexpression)
 #  include "qregularexpression.h"
@@ -30,6 +29,7 @@
 
 #  include "qbitarray.h"
 #  include "qurl.h"
+#  include "quuid.h"
 #  include "qvariant.h"
 #  include "qjsonvalue.h"
 #  include "qjsonobject.h"
@@ -1255,10 +1255,12 @@ static constexpr struct : QMetaTypeModuleHelper
         );
         QMETATYPE_CONVERTER(QByteArray, Nullptr, Q_UNUSED(source); result = QByteArray(); return true;);
 
+#ifndef QT_BOOTSTRAPPED
         QMETATYPE_CONVERTER(QString, QUuid, result = source.toString(); return true;);
         QMETATYPE_CONVERTER(QUuid, QString, result = QUuid(source); return true;);
         QMETATYPE_CONVERTER(QByteArray, QUuid, result = source.toByteArray(); return true;);
         QMETATYPE_CONVERTER(QUuid, QByteArray, result = QUuid(source); return true;);
+#endif
 
 #ifndef QT_NO_GEOM_VARIANT
         QMETATYPE_CONVERTER(QSize, QSizeF, result = source.toSize(); return true;);

@@ -38,7 +38,6 @@ qt_internal_extend_target(Bootstrap
         ../../corelib/kernel/qcoreapplication.cpp
         ../../corelib/kernel/qmetatype.cpp
         ../../corelib/kernel/qsystemerror.cpp
-        ../../corelib/plugin/quuid.cpp
         ../../corelib/serialization/qcborcommon.cpp
         ../../corelib/serialization/qcborstreamwriter.cpp
         ../../corelib/serialization/qcborvalue.cpp
@@ -70,7 +69,6 @@ qt_internal_extend_target(Bootstrap
         ../../corelib/tools/qarraydata.cpp
         ../../corelib/tools/qcommandlineoption.cpp
         ../../corelib/tools/qcommandlineparser.cpp
-        ../../corelib/tools/qcryptographichash.cpp
         ../../corelib/tools/qhash.cpp
         ../../corelib/tools/qringbuffer.cpp
     DEFINES

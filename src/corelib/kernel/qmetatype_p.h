@@ -68,6 +68,7 @@ struct TypeDefinition
 // Ignore these types, as incomplete
 #ifdef QT_BOOTSTRAPPED
 template<> struct TypeDefinition<QBitArray> { static const bool IsAvailable = false; };
+template<> struct TypeDefinition<QByteArrayList> { static const bool IsAvailable = false; };
 template<> struct TypeDefinition<QCborArray> { static const bool IsAvailable = false; };
 template<> struct TypeDefinition<QCborMap> { static const bool IsAvailable = false; };
 template<> struct TypeDefinition<QCborSimpleType> { static const bool IsAvailable = false; };
@@ -80,7 +81,7 @@ template<> struct TypeDefinition<QJsonDocument> { static const bool IsAvailable 
 template<> struct TypeDefinition<QJsonObject> { static const bool IsAvailable = false; };
 template<> struct TypeDefinition<QJsonValue> { static const bool IsAvailable = false; };
 template<> struct TypeDefinition<QUrl> { static const bool IsAvailable = false; };
-template<> struct TypeDefinition<QByteArrayList> { static const bool IsAvailable = false; };
+template<> struct TypeDefinition<QUuid> { static const bool IsAvailable = false; };
 #endif
 #ifdef QT_NO_GEOM_VARIANT
 template<> struct TypeDefinition<QRect> { static const bool IsAvailable = false; };

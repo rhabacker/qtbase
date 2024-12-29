@@ -17,10 +17,6 @@
 
 #include "../../3rdparty/sha1/sha1.cpp"
 
-#if defined(QT_BOOTSTRAPPED) && !defined(QT_CRYPTOGRAPHICHASH_ONLY_SHA1)
-#  error "Are you sure you need the other hashing algorithms besides SHA-1?"
-#endif
-
 // Header from rfc6234
 #include "../../3rdparty/rfc6234/sha.h"
 

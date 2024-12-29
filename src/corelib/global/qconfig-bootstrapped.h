@@ -35,7 +35,6 @@
 // Keep feature-test macros in alphabetic order by feature name:
 #define QT_FEATURE_cborstreamreader -1
 #define QT_FEATURE_cborstreamwriter 1
-#define QT_CRYPTOGRAPHICHASH_ONLY_SHA1
 #define QT_FEATURE_cxx17_filesystem -1
 #define QT_NO_DATASTREAM
 #define QT_FEATURE_datestring 1
