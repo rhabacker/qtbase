@@ -515,19 +515,6 @@ QDebug QMessageLogger::debug(QMessageLogger::CategoryFunction catFunc) const
 {
     return debug((*catFunc)());
 }
-
-/*!
-    \internal
-
-    Returns a QNoDebug object, which is used to ignore debugging output.
-
-    \sa QNoDebug, qDebug()
-*/
-QNoDebug QMessageLogger::noDebug() const noexcept
-{
-    return QNoDebug();
-}
-
 #endif
 
 /*!

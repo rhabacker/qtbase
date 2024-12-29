@@ -1367,3 +1367,19 @@ QUuid::Version QUuid::version() const noexcept
 // order sections alphabetically to reduce chances of merge conflicts
 
 #endif // QT_CORE_REMOVED_SINCE(6, 9)
+
+#if QT_CORE_REMOVED_SINCE(6, 10)
+
+#include "qlogging.h"
+
+QNoDebug QMessageLogger::noDebug() const noexcept
+{
+    return QNoDebug();
+}
+
+
+// #include "qotherheader.h"
+// // implement removed functions from qotherheader.h
+// order sections alphabetically to reduce chances of merge conflicts
+
+#endif // QT_CORE_REMOVED_SINCE(6, 10)
