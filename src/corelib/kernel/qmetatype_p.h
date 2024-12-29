@@ -67,6 +67,7 @@ struct TypeDefinition
 
 // Ignore these types, as incomplete
 #ifdef QT_BOOTSTRAPPED
+template<> struct TypeDefinition<qfloat16> { static const bool IsAvailable = false; };
 template<> struct TypeDefinition<QBitArray> { static const bool IsAvailable = false; };
 template<> struct TypeDefinition<QByteArrayList> { static const bool IsAvailable = false; };
 template<> struct TypeDefinition<QCborArray> { static const bool IsAvailable = false; };

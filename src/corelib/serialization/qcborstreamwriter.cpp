@@ -277,6 +277,7 @@ QCborStreamWriter::QCborStreamWriter(QIODevice *device)
 {
 }
 
+#ifndef QT_BOOTSTRAPPED
 /*!
    Creates a QCborStreamWriter object that will append the stream to \a data.
    All streaming is done immediately to the byte array, without the need for
@@ -295,6 +296,7 @@ QCborStreamWriter::QCborStreamWriter(QByteArray *data)
     d->deleteDevice = true;
     d->device->open(QIODevice::WriteOnly | QIODevice::Unbuffered);
 }
+#endif
 
 /*!
    Destroys this QCborStreamWriter object and frees any resources associated.

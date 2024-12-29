@@ -936,6 +936,7 @@ QTextStream::QTextStream(QString *string, OpenMode openMode)
     d->status = Ok;
 }
 
+#ifndef QT_BOOTSTRAPPED
 /*!
     Constructs a QTextStream that operates on \a array, using \a
     openMode to define the open mode. Internally, the array is wrapped
@@ -987,6 +988,7 @@ QTextStream::QTextStream(const QByteArray &array, OpenMode openMode)
 #endif
     d->status = Ok;
 }
+#endif
 
 /*!
     Constructs a QTextStream that operates on \a fileHandle, using \a
