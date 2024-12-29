@@ -45,6 +45,8 @@
 // Keep feature-test macros in alphabetic order by feature name:
 #define QT_FEATURE_cborstreamreader -1
 #define QT_FEATURE_cborstreamwriter 1
+#define QT_FEATURE_commandlineparser 1
+#define QT_NO_COMPRESS
 #define QT_FEATURE_cxx17_filesystem -1
 #define QT_NO_DATASTREAM
 #define QT_FEATURE_datestring 1
@@ -52,15 +54,15 @@
 #define QT_FEATURE_easingcurve -1
 #define QT_FEATURE_etw -1
 #define QT_NO_GEOM_VARIANT
-#define QT_FEATURE_hijricalendar -1
-#define QT_FEATURE_icu -1
-#define QT_FEATURE_islamiccivilcalendar -1
-#define QT_FEATURE_jalalicalendar -1
-#define QT_FEATURE_journald -1
 #define QT_FEATURE_futimens -1
 #undef QT_FEATURE_future
 #define QT_FEATURE_future -1
+#define QT_FEATURE_hijricalendar -1
+#define QT_FEATURE_icu -1
 #define QT_FEATURE_itemmodel -1
+#define QT_FEATURE_islamiccivilcalendar -1
+#define QT_FEATURE_jalalicalendar -1
+#define QT_FEATURE_journald -1
 #define QT_FEATURE_library -1
 #ifdef __linux__
 # define QT_FEATURE_linkat 1
@@ -71,6 +73,7 @@
 #define QT_FEATURE_memmem -1
 #define QT_FEATURE_memrchr -1
 #define QT_NO_QOBJECT
+#define QT_FEATURE_permissions -1
 #define QT_FEATURE_process -1
 #define QT_FEATURE_regularexpression 1
 #ifdef __GLIBC_PREREQ
@@ -91,12 +94,5 @@
 #define QT_NO_TRANSLATION
 #define QT_FEATURE_translation -1
 #define QT_NO_VARIANT -1
-
-#define QT_NO_COMPRESS
-
-#define QT_FEATURE_commandlineparser 1
-#define QT_FEATURE_permissions -1
-
-#define QT_NO_TEMPORARYFILE
 
 #endif // QT_BOOTSTRAPPED
