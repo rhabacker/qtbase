@@ -860,15 +860,13 @@ static QCborValue::Type convertToExtendedType(QCborContainerPrivate *d)
     return QCborValue::Tag;
 }
 
-#if QT_CONFIG(cborstreamwriter)
+#if QT_CONFIG(cborstreamwriter) && !defined(QT_BOOTSTRAPPED)
 static void writeDoubleToCbor(QCborStreamWriter &writer, double d, QCborValue::EncodingOptions opt)
 {
     if (qt_is_nan(d)) {
         if (opt & QCborValue::UseFloat) {
-#ifndef QT_BOOTSTRAPPED
             if ((opt & QCborValue::UseFloat16) == QCborValue::UseFloat16)
                 return writer.append(std::numeric_limits<qfloat16>::quiet_NaN());
-#endif
             return writer.append(std::numeric_limits<float>::quiet_NaN());
         }
         return writer.append(qt_qnan());
@@ -889,13 +887,11 @@ static void writeDoubleToCbor(QCborStreamWriter &writer, double d, QCborValue::E
         float f = float(d);
         if (f == d) {
             // no data loss, we could use float
-#ifndef QT_BOOTSTRAPPED
             if ((opt & QCborValue::UseFloat16) == QCborValue::UseFloat16) {
                 qfloat16 f16 = qfloat16(f);
                 if (f16 == f)
                     return writer.append(f16);
             }
-#endif
 
             return writer.append(f);
         }
@@ -903,7 +899,7 @@ static void writeDoubleToCbor(QCborStreamWriter &writer, double d, QCborValue::E
 
     writer.append(d);
 }
-#endif // QT_CONFIG(cborstreamwriter)
+#endif // QT_CONFIG(cborstreamwriter) && !QT_BOOTSTRAPPED
 
 static inline int typeOrder(QCborValue::Type e1, QCborValue::Type  e2)
 {
@@ -1549,7 +1545,7 @@ QCborMap::compareThreeWay_helper(const QCborMap &lhs, const QCborValue &rhs) noe
     return Qt::compareThreeWay(c, 0);
 }
 
-#if QT_CONFIG(cborstreamwriter)
+#if QT_CONFIG(cborstreamwriter) && !defined(QT_BOOTSTRAPPED)
 static void encodeToCbor(QCborStreamWriter &writer, const QCborContainerPrivate *d, qsizetype idx,
                          QCborValue::EncodingOptions opt)
 {
@@ -1639,7 +1635,7 @@ static void encodeToCbor(QCborStreamWriter &writer, const QCborContainerPrivate 
         qWarning("QCborValue: found unknown type 0x%x", e.type);
     }
 }
-#endif // QT_CONFIG(cborstreamwriter)
+#endif // QT_CONFIG(cborstreamwriter) && !QT_BOOTSTRAPPED
 
 #if QT_CONFIG(cborstreamreader)
 // confirm that our basic Types match QCborStreamReader::Types
@@ -2715,7 +2711,7 @@ QCborValue QCborValue::fromCbor(const QByteArray &ba, QCborParserError *error)
 */
 #endif // QT_CONFIG(cborstreamreader)
 
-#if QT_CONFIG(cborstreamwriter)
+#if QT_CONFIG(cborstreamwriter) && !defined(QT_BOOTSTRAPPED)
 /*!
     Encodes this QCborValue object to its CBOR representation, using the
     options specified in \a opt, and return the byte array containing that
@@ -2834,13 +2830,13 @@ Q_NEVER_INLINE void QCborValue::toCbor(QCborStreamWriter &writer, EncodingOption
     }
 }
 
-#  if QT_VERSION < QT_VERSION_CHECK(7, 0, 0) && !defined(QT_BOOTSTRAPPED)
+#  if QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
 void QCborValueRef::toCbor(QCborStreamWriter &writer, QCborValue::EncodingOptions opt)
 {
     concrete().toCbor(writer, opt);
 }
 #  endif
-#endif // QT_CONFIG(cborstreamwriter)
+#endif // QT_CONFIG(cborstreamwriter) && !QT_BOOTSTRAPPED
 
 void QCborValueRef::assign(QCborValueRef that, const QCborValue &other)
 {
@@ -3388,6 +3384,7 @@ QDataStream &operator<<(QDataStream &stream, const QCborValue &value)
 }
 #endif
 
+#if QT_CONFIG(cborstreamreader)
 QDataStream &operator>>(QDataStream &stream, QCborValue &value)
 {
     QByteArray buffer;
@@ -3399,6 +3396,7 @@ QDataStream &operator>>(QDataStream &stream, QCborValue &value)
     return stream;
 }
 #endif
+#endif // QT_NO_DATASTREAM
 
 
 QT_END_NAMESPACE
