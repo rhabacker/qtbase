@@ -553,6 +553,7 @@ public:
 #endif
 #endif
 
+public:
     // type erased converter function
     using ConverterFunction = std::function<bool(const void *src, void *target)>;
 
@@ -2358,15 +2359,17 @@ struct QLessThanOperatorForType <T, false>
 template<typename T, bool = (QTypeTraits::has_ostream_operator_v<QDebug, T> && !std::is_pointer_v<T>)>
 struct QDebugStreamOperatorForType
 {
+    static constexpr QMetaTypeInterface::DebugStreamFn debugStream = nullptr;
+};
+
+#ifndef QT_NO_DEBUG_STREAM
+template<typename T>
+struct QDebugStreamOperatorForType <T, true>
+{
     static void debugStream(const QMetaTypeInterface *, QDebug &dbg, const void *a)
     { dbg << *reinterpret_cast<const T *>(a); }
 };
-
-template<typename T>
-struct QDebugStreamOperatorForType <T, false>
-{
-    static constexpr QMetaTypeInterface::DebugStreamFn debugStream = nullptr;
-};
+#endif
 
 template<typename T, bool = QTypeTraits::has_stream_operator_v<QDataStream, T>>
 struct QDataStreamOperatorForType

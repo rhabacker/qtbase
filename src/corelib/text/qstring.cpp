@@ -8822,7 +8822,7 @@ QString QString::arg_impl(qlonglong a, int fieldWidth, int base, QChar fillChar)
     ArgEscapeData d = findArgEscapes(*this);
 
     if (d.occurrences == 0) {
-        qWarning() << "QString::arg: Argument missing:" << *this << ',' << a;
+        qWarning("QString::arg: Argument missing: \"%ls\", %llu", qUtf16Printable(*this), a);
         return *this;
     }
 
@@ -8854,7 +8854,7 @@ QString QString::arg_impl(qulonglong a, int fieldWidth, int base, QChar fillChar
     ArgEscapeData d = findArgEscapes(*this);
 
     if (d.occurrences == 0) {
-        qWarning() << "QString::arg: Argument missing:" << *this << ',' << a;
+        qWarning("QString::arg: Argument missing: \"%ls\", %lld", qUtf16Printable(*this), a);
         return *this;
     }
 

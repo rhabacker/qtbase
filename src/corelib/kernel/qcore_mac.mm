@@ -174,6 +174,7 @@ os_log_type_t AppleUnifiedLogger::logTypeForMessageType(QtMsgType msgType)
 
 #endif // QT_USE_APPLE_UNIFIED_LOGGING
 
+#ifndef QT_NO_DEBUG_STREAM
 // -------------------------------------------------------------------------
 
 QDebug operator<<(QDebug dbg, id obj)
@@ -228,6 +229,7 @@ QT_FOR_EACH_CORE_FOUNDATION_TYPE(QT_DECLARE_WEAK_QDEBUG_OPERATOR_FOR_CF_TYPE);
 QT_FOR_EACH_MUTABLE_CORE_FOUNDATION_TYPE(QT_DECLARE_WEAK_QDEBUG_OPERATOR_FOR_CF_TYPE);
 QT_FOR_EACH_CORE_GRAPHICS_TYPE(QT_DECLARE_WEAK_QDEBUG_OPERATOR_FOR_CF_TYPE);
 QT_FOR_EACH_MUTABLE_CORE_GRAPHICS_TYPE(QT_DECLARE_WEAK_QDEBUG_OPERATOR_FOR_CF_TYPE);
+#endif // QT_NO_DEBUG_STREAM
 
 // -------------------------------------------------------------------------
 
@@ -358,13 +360,15 @@ std::optional<uint32_t> qt_mac_sipConfiguration()
             return {}; // SIP config is not available
 
         if (auto type = CFGetTypeID(csrConfig); type != CFDataGetTypeID()) {
+#ifndef QT_NO_DEBUG_STREAM
             qWarning() << "Unexpected SIP config type" << CFCopyTypeIDDescription(type);
+#endif
             return {};
         }
 
         QByteArray data = QByteArray::fromRawCFData(csrConfig.as<CFDataRef>());
         if (data.size() != sizeof(uint32_t)) {
-            qWarning() << "Unexpected SIP config size" << data.size();
+            qWarning("Unexpected SIP config size %td", ptrdiff_t(data.size()));
             return {};
         }
 

@@ -6727,17 +6727,17 @@ void tst_QString::arg()
 
     QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: , foo");
     QCOMPARE(QString().arg(foo), QString());
-    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"\" , 0");
+    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"\", 0");
     QCOMPARE( QString().arg(0), QString() );
-    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"\" , 0");
+    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"\", 0");
     QCOMPARE(QString(u""_s).arg(0), u""_s);
-    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \" \" , 0");
+    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \" \", 0");
     QCOMPARE(QString(u" "_s).arg(0), " "_L1);
-    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"%\" , 0");
+    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"%\", 0");
     QCOMPARE(QString(u"%"_s).arg(0), "%"_L1);
-    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"%%\" , 0");
+    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"%%\", 0");
     QCOMPARE(QString(u"%%"_s).arg(0), "%%"_L1);
-    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"%%%\" , 0");
+    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"%%%\", 0");
     QCOMPARE(QString(u"%%%"_s).arg(0), "%%%"_L1);
     QCOMPARE(QString(u"%%%1%%%2"_s).arg(foo).arg(bar), "%%foo%%bar"_L1);
 

@@ -29,6 +29,8 @@
 #define QT_NO_EXCEPTIONS
 #endif
 
+#define QT_NO_DEBUG_STREAM
+
 #define QT_NO_USING_NAMESPACE
 #define QT_NO_DEPRECATED
 

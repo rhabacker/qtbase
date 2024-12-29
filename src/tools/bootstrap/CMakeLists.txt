@@ -21,7 +21,6 @@ qt_internal_extend_target(Bootstrap
         ../../corelib/global/qlogging.cpp
         ../../corelib/global/qtenvironmentvariables.cpp
         ../../corelib/io/qabstractfileengine.cpp
-        ../../corelib/io/qdebug.cpp
         ../../corelib/io/qdir.cpp
         ../../corelib/io/qfile.cpp
         ../../corelib/io/qfiledevice.cpp
