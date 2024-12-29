@@ -29,7 +29,15 @@
 #define QT_NO_EXCEPTIONS
 #endif
 
+#undef QT_DEBUG
+#undef QT_FORCE_ASSERTS
+#ifndef QT_NO_DEBUG
+#  define QT_NO_DEBUG
+#endif
+#define QT_NO_DEBUG_OUTPUT
 #define QT_NO_DEBUG_STREAM
+#define QT_NO_INFO_OUTPUT
+#define QT_NO_WARNING_OUTPUT
 
 #define QT_NO_USING_NAMESPACE
 #define QT_NO_DEPRECATED

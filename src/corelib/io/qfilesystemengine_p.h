@@ -27,7 +27,7 @@ QT_BEGIN_NAMESPACE
 
 #define Q_RETURN_ON_INVALID_FILENAME(message, result) \
     { \
-        QMessageLogger(QT_MESSAGELOG_FILE, QT_MESSAGELOG_LINE, QT_MESSAGELOG_FUNC).warning(message); \
+        qWarning(message); \
         errno = EINVAL; \
         return (result); \
     }

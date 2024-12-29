@@ -130,8 +130,7 @@ static Q_NEVER_INLINE QString makeString(const QCborContainerPrivate *d, qsizety
     case QCborValue::Array:
     case QCborValue::Map:
 #if defined(QT_JSON_READONLY) || defined(QT_BOOTSTRAPPED)
-        qFatal("Writing JSON is disabled.");
-        return QString();
+        Q_UNREACHABLE_RETURN(QString());
 #else
         return d->valueAt(idx).toDiagnosticNotation(QCborValue::Compact);
 #endif
