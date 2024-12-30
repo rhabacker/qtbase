@@ -26,6 +26,7 @@
 #include <qsortfilterproxymodel.h>
 #include <qlineedit.h>
 #include <qlayout.h>
+#include <qsettings.h>
 #include <qtemporarydir.h>
 #include <private/qfiledialog_p.h>
 #if defined QT_BUILD_INTERNAL

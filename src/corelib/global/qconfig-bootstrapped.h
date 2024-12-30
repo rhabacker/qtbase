@@ -95,7 +95,6 @@
 #define QT_NO_COMPRESS
 
 #define QT_FEATURE_commandlineparser 1
-#define QT_FEATURE_settings -1
 #define QT_FEATURE_permissions -1
 
 #define QT_NO_TEMPORARYFILE
