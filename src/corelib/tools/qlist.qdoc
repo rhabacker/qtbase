@@ -1638,3 +1638,11 @@
     This function only allocates memory if the number of elements in \a l
     exceeds the capacity of this list or this list is shared.
 */
+
+/*!
+    \fn template <typename T> QList<T>::DataPointer &QList<T>::data_ptr();
+    \fn template <typename T> const QList<T>::DataPointer &QList<T>::data_ptr() const;
+
+    \internal
+    \since 6.10
+*/

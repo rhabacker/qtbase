@@ -107,6 +107,9 @@ public:
     using rvalue_ref = T &&;
 #endif
 
+    DataPointer &data_ptr() { return d; }
+    const DataPointer &data_ptr() const { return d; }
+
     class const_iterator;
     class iterator {
         friend class QList<T>;
