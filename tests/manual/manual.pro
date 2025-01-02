@@ -9,7 +9,6 @@ foreignwindows \
 fontfeatures \
 gestures \
 highdpi \
-inputmethodhints \
 keypadnavigation \
 keyevents \
 lance \
