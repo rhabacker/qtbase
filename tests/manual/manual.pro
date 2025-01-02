@@ -32,7 +32,6 @@ qstorageinfo \
 qscreen \
 qscreen_xrandr \
 qssloptions \
-qsslsocket \
 qsysinfo \
 qtabletevent \
 qtexteditlist \
