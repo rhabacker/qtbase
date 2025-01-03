@@ -76,7 +76,7 @@ struct TestTraits
 {
     using Type = GlobalResource::handle;
 
-    static bool close(Type handle)
+    static bool close(Type handle) noexcept
     {
         return GlobalResource::close(handle);
     }
@@ -287,7 +287,7 @@ private slots:
         {
             using Type = int;
 
-            static bool close(Type)
+            static bool close(Type) noexcept
             {
                 return true;
             }
