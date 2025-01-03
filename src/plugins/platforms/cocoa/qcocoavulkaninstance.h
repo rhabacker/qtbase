@@ -32,6 +32,7 @@ private:
     QLibrary m_lib;
     VkSurfaceKHR m_nullSurface = nullptr;
     PFN_vkCreateMacOSSurfaceMVK m_createSurface = nullptr;
+    PFN_vkCreateMetalSurfaceEXT m_createMetalSurface = nullptr;
 };
 
 QT_END_NAMESPACE
