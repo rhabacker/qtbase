@@ -183,22 +183,24 @@ class QtDisplayManager {
             decorView.setSystemUiVisibility(systemUiVisibility);
         }
 
-        // Handle transparent status and navigation bars
-        if (m_expandedToCutout) {
-            window.setStatusBarColor(Color.TRANSPARENT);
-            window.setNavigationBarColor(Color.TRANSPARENT);
-        } else {
-            // Restore theme's system bars colors
-            Theme theme = m_activity.getTheme();
-            TypedValue typedValue = new TypedValue();
+        if (!isFullScreen) {
+            // Handle transparent status and navigation bars
+            if (m_expandedToCutout) {
+                window.setStatusBarColor(Color.TRANSPARENT);
+                window.setNavigationBarColor(Color.TRANSPARENT);
+            } else {
+                // Restore theme's system bars colors
+                Theme theme = m_activity.getTheme();
+                TypedValue typedValue = new TypedValue();
 
-            theme.resolveAttribute(android.R.attr.statusBarColor, typedValue, true);
-            int defaultStatusBarColor = typedValue.data;
-            window.setStatusBarColor(defaultStatusBarColor);
+                theme.resolveAttribute(android.R.attr.statusBarColor, typedValue, true);
+                int defaultStatusBarColor = typedValue.data;
+                window.setStatusBarColor(defaultStatusBarColor);
 
-            theme.resolveAttribute(android.R.attr.navigationBarColor, typedValue, true);
-            int defaultNavigationBarColor = typedValue.data;
-            window.setNavigationBarColor(defaultNavigationBarColor);
+                theme.resolveAttribute(android.R.attr.navigationBarColor, typedValue, true);
+                int defaultNavigationBarColor = typedValue.data;
+                window.setNavigationBarColor(defaultNavigationBarColor);
+            }
         }
     }
 
