@@ -275,7 +275,7 @@ class QtInputDelegate implements QtInputConnection.QtInputConnectionListener, Qt
             Rect r = new Rect();
             activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
             DisplayMetrics metrics = new DisplayMetrics();
-            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            QtDisplayManager.getDisplay(activity).getMetrics(metrics);
             int screenHeight = metrics.heightPixels;
             final int kbHeight = screenHeight - r.bottom;
             isKeyboardHidden = kbHeight < screenHeight * KEYBOARD_TO_SCREEN_RATIO;
@@ -359,7 +359,7 @@ class QtInputDelegate implements QtInputConnection.QtInputConnectionListener, Qt
     private boolean updateSoftInputMode(Activity activity, int height)
     {
         DisplayMetrics metrics = new DisplayMetrics();
-        activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        QtDisplayManager.getDisplay(activity).getMetrics(metrics);
 
         // If the screen is in portrait mode than we estimate that keyboard height
         // will not be higher than 2/5 of the screen. Otherwise we estimate that keyboard height
@@ -401,7 +401,7 @@ class QtInputDelegate implements QtInputConnection.QtInputConnectionListener, Qt
             if (!m_keyboardIsVisible)
                 return;
             DisplayMetrics metrics = new DisplayMetrics();
-            activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            QtDisplayManager.getDisplay(activity).getMetrics(metrics);
             Rect r = new Rect();
             activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
             if (metrics.heightPixels != r.bottom) {

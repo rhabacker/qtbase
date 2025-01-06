@@ -75,20 +75,9 @@ class QtDisplayManager {
         };
     }
 
-    @SuppressWarnings("deprecation")
     static void updateRefreshRate(Context context)
     {
-        Display display;
-        Activity activity = (Activity) context;
-        if (activity != null) {
-            display = (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
-                            ? activity.getWindowManager().getDefaultDisplay()
-                            : activity.getDisplay();
-        } else {
-            final DisplayManager dm = context.getSystemService(DisplayManager.class);
-            display = dm.getDisplay(Display.DEFAULT_DISPLAY);
-        }
-
+        Display display = getDisplay(context);
         float refreshRate = display != null ? display.getRefreshRate() : 60.0f;
         QtDisplayManager.handleRefreshRateChanged(refreshRate);
     }
@@ -104,10 +93,7 @@ class QtDisplayManager {
     }
 
     static int getDisplayRotation(Activity activity) {
-        Display display = Build.VERSION.SDK_INT < Build.VERSION_CODES.R ?
-                activity.getWindowManager().getDefaultDisplay() :
-                activity.getDisplay();
-
+        Display display = QtDisplayManager.getDisplay(activity);
         return display != null ? display.getRotation() : 0;
     }
 
@@ -231,6 +217,20 @@ class QtDisplayManager {
         }
     }
 
+    @SuppressWarnings("deprecation")
+    static Display getDisplay(Context context)
+    {
+        Activity activity = (Activity) context;
+        if (activity != null) {
+            return (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
+                        ? activity.getWindowManager().getDefaultDisplay()
+                        : activity.getDisplay();
+        }
+
+        final DisplayManager dm = context.getSystemService(DisplayManager.class);
+        return dm.getDisplay(Display.DEFAULT_DISPLAY);
+    }
+
     @UsedFromNativeCode
     static Display getDisplay(Context context, int displayId)
     {
@@ -279,7 +279,7 @@ class QtDisplayManager {
 
         final WindowInsets rootInsets = activity.getWindow().getDecorView().getRootWindowInsets();
         final WindowManager windowManager = activity.getWindowManager();
-        Display display;
+        Display display = QtDisplayManager.getDisplay(activity);
 
         int insetLeft;
         int insetTop;
@@ -288,8 +288,6 @@ class QtDisplayManager {
         int maxHeight;
 
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            display = windowManager.getDefaultDisplay();
-
             final DisplayMetrics maxMetrics = new DisplayMetrics();
             display.getRealMetrics(maxMetrics);
             maxWidth = maxMetrics.widthPixels;
@@ -298,8 +296,6 @@ class QtDisplayManager {
             insetLeft = rootInsets.getStableInsetLeft();
             insetTop = rootInsets.getStableInsetTop();
         } else {
-            display = activity.getDisplay();
-
             final WindowMetrics maxMetrics = windowManager.getMaximumWindowMetrics();
             maxWidth = maxMetrics.getBounds().width();
             maxHeight = maxMetrics.getBounds().height();

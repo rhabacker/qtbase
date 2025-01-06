@@ -154,7 +154,7 @@ class QtActivityDelegate extends QtActivityDelegateBase
             Rect r = new Rect();
             m_activity.getWindow().getDecorView().getWindowVisibleDisplayFrame(r);
             DisplayMetrics metrics = new DisplayMetrics();
-            m_activity.getWindowManager().getDefaultDisplay().getMetrics(metrics);
+            QtDisplayManager.getDisplay(m_activity).getMetrics(metrics);
             final int kbHeight = metrics.heightPixels - r.bottom;
             if (kbHeight < 0) {
                 m_inputDelegate.setKeyboardVisibility(false, System.nanoTime());
