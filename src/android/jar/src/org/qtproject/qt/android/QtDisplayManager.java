@@ -79,7 +79,7 @@ class QtDisplayManager {
         };
     }
 
-    static void handleOrientationChanges(Activity activity)
+    static void handleOrientationChange(Activity activity)
     {
         int currentRotation = getDisplayRotation(activity);
         if (m_previousRotation == currentRotation)
