@@ -697,7 +697,8 @@ QApplication::~QApplication()
     QApplicationPrivate::sys_font = nullptr;
     delete QApplicationPrivate::set_font;
     QApplicationPrivate::set_font = nullptr;
-    app_fonts()->clear();
+    if (app_fonts.exists())
+        app_fonts()->clear();
 
     delete QApplicationPrivate::app_style;
     QApplicationPrivate::app_style = nullptr;
