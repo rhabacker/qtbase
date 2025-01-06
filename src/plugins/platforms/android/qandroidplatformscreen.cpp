@@ -87,16 +87,13 @@ QAndroidPlatformScreen::QAndroidPlatformScreen(const QJniObject &displayObject)
     m_refreshRate = displayObject.callMethod<jfloat>("getRefreshRate");
     m_displayId = displayObject.callMethod<jint>("getDisplayId");
 
-    const QJniObject context = QNativeInterface::QAndroidApplication::context();
-    const auto displayContext = context.callMethod<QtJniTypes::Context>("createDisplayContext",
-                                                displayObject.object<QtJniTypes::Display>());
-
+    const auto context = QNativeInterface::QAndroidApplication::context();
     const auto sizeObj = QtJniTypes::QtDisplayManager::callStaticMethod<QtJniTypes::Size>(
-                                    "getDisplaySize", displayContext,
+                                    "getDisplaySize", context,
                                     displayObject.object<QtJniTypes::Display>());
     m_size = QSize(sizeObj.callMethod<int>("getWidth"), sizeObj.callMethod<int>("getHeight"));
 
-    const auto resources = displayContext.callMethod<QtJniTypes::Resources>("getResources");
+    const auto resources = context.callMethod<QtJniTypes::Resources>("getResources");
     const auto metrics = resources.callMethod<QtJniTypes::DisplayMetrics>("getDisplayMetrics");
     const float xdpi = metrics.getField<float>("xdpi");
     const float ydpi = metrics.getField<float>("ydpi");

@@ -251,21 +251,25 @@ class QtDisplayManager {
     }
 
     @UsedFromNativeCode
-    static Size getDisplaySize(Context displayContext, Display display)
+    @SuppressWarnings("deprecation")
+    static Size getDisplaySize(Context context, Display display)
     {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
-            DisplayMetrics realMetrics = new DisplayMetrics();
-            display.getRealMetrics(realMetrics);
-            return new Size(realMetrics.widthPixels, realMetrics.heightPixels);
-        }
+        if (display == null || context == null)
+            return new Size(0, 0);
 
-        Context windowsContext = displayContext.createWindowContext(
-                WindowManager.LayoutParams.TYPE_APPLICATION, null);
-        WindowManager windowManager =
-                (WindowManager) windowsContext.getSystemService(Context.WINDOW_SERVICE);
-        WindowMetrics windowsMetrics = windowManager.getCurrentWindowMetrics();
-        Rect bounds = windowsMetrics.getBounds();
-        return new Size(bounds.width(), bounds.height());
+        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            final DisplayMetrics metrics = new DisplayMetrics();
+            display.getRealMetrics(metrics);
+            return new Size(metrics.widthPixels, metrics.heightPixels);
+        } else {
+            Context displayContext = context.createDisplayContext(display);
+            Context windowsContext = displayContext.createWindowContext(
+                    WindowManager.LayoutParams.TYPE_APPLICATION, null);
+            WindowManager windowManager = (WindowManager) windowsContext.getSystemService(
+                    Context.WINDOW_SERVICE);
+            Rect bounds = windowManager.getMaximumWindowMetrics().getBounds();
+            return new Size(bounds.width(), bounds.height());
+        }
     }
 
     static void setApplicationDisplayMetrics(Activity activity, int width, int height)
@@ -274,28 +278,14 @@ class QtDisplayManager {
             return;
 
         final WindowInsets rootInsets = activity.getWindow().getDecorView().getRootWindowInsets();
-        final WindowManager windowManager = activity.getWindowManager();
-        Display display = QtDisplayManager.getDisplay(activity);
 
         int insetLeft;
         int insetTop;
 
-        int maxWidth;
-        int maxHeight;
-
         if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            final DisplayMetrics maxMetrics = new DisplayMetrics();
-            display.getRealMetrics(maxMetrics);
-            maxWidth = maxMetrics.widthPixels;
-            maxHeight = maxMetrics.heightPixels;
-
             insetLeft = rootInsets.getStableInsetLeft();
             insetTop = rootInsets.getStableInsetTop();
         } else {
-            final WindowMetrics maxMetrics = windowManager.getMaximumWindowMetrics();
-            maxWidth = maxMetrics.getBounds().width();
-            maxHeight = maxMetrics.getBounds().height();
-
             insetLeft = rootInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars()).left;
             insetTop = rootInsets.getInsetsIgnoringVisibility(WindowInsets.Type.systemBars()).top;
         }
@@ -305,7 +295,8 @@ class QtDisplayManager {
         double density = displayMetrics.density;
         double scaledDensity = displayMetrics.scaledDensity;
 
-        setDisplayMetrics(maxWidth, maxHeight, insetLeft, insetTop,
+        Size displaySize = getDisplaySize(activity, QtDisplayManager.getDisplay(activity));
+        setDisplayMetrics(displaySize.getWidth(), displaySize.getHeight(), insetLeft, insetTop,
                 width, height, getXDpi(displayMetrics), getYDpi(displayMetrics),
                 scaledDensity, density);
     }
