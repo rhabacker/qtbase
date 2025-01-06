@@ -3984,8 +3984,21 @@ void tst_QAccessibility::labelTest()
     QTestAccessibility::clearEvents();
 }
 
+#if defined(Q_OS_MACOS)
+QT_BEGIN_NAMESPACE
+    extern void qt_set_sequence_auto_mnemonic(bool);
+QT_END_NAMESPACE
+#endif
+
 void tst_QAccessibility::accelerators()
 {
+#if defined(Q_OS_MACOS)
+    qt_set_sequence_auto_mnemonic(true);
+    const auto resetAutoMnemonic = qScopeGuard([] {
+        qt_set_sequence_auto_mnemonic(false);
+    });
+#endif
+
     auto windowHolder = std::make_unique<QWidget>();
     auto window = windowHolder.get();
     QHBoxLayout *lay = new QHBoxLayout(window);
@@ -4011,7 +4024,7 @@ void tst_QAccessibility::accelerators()
     label->setText(tr("Q &&A"));
     QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QString());
 
-#if !defined(QT_NO_DEBUG) && !defined(Q_OS_MAC)
+#if !defined(QT_NO_DEBUG)
     QTest::ignoreMessage(QtWarningMsg, "QKeySequence::mnemonic: \"Q &A&B\" contains multiple occurrences of '&'");
 #endif
     label->setText(tr("Q &A&B"));
