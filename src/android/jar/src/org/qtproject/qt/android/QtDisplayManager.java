@@ -84,17 +84,13 @@ class QtDisplayManager {
 
     static void handleOrientationChange(Activity activity)
     {
-        int currentRotation = getDisplayRotation(activity);
-        if (m_previousRotation == currentRotation)
-            return;
-        int nativeOrientation = getNativeOrientation(activity, currentRotation);
-        QtDisplayManager.handleOrientationChanged(currentRotation, nativeOrientation);
-        m_previousRotation = currentRotation;
-    }
-
-    static int getDisplayRotation(Activity activity) {
         Display display = QtDisplayManager.getDisplay(activity);
-        return display != null ? display.getRotation() : 0;
+        int rotation = display != null ? display.getRotation() : 0;
+        if (m_previousRotation == rotation)
+            return;
+        int nativeOrientation = getNativeOrientation(activity, rotation);
+        QtDisplayManager.handleOrientationChanged(rotation, nativeOrientation);
+        m_previousRotation = rotation;
     }
 
     private static int getNativeOrientation(Activity activity, int rotation)
