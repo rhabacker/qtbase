@@ -145,10 +145,7 @@ class QtActivityDelegate extends QtActivityDelegateBase
 
         handleUiModeChange(m_activity.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK);
 
-        Display display = (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
-                ? m_activity.getWindowManager().getDefaultDisplay()
-                : m_activity.getDisplay();
-        QtDisplayManager.handleRefreshRateChanged(QtDisplayManager.getRefreshRate(display));
+        QtDisplayManager.updateRefreshRate(m_activity);
 
         m_layout.getViewTreeObserver().addOnPreDrawListener(() -> {
             if (!m_inputDelegate.isKeyboardVisible())

@@ -533,7 +533,7 @@ static void setDisplayMetrics(JNIEnv * /*env*/, jclass /*clazz*/, jint screenWid
                               jint screenHeightPixels, jint availableLeftPixels,
                               jint availableTopPixels, jint availableWidthPixels,
                               jint availableHeightPixels, jdouble xdpi, jdouble ydpi,
-                              jdouble scaledDensity, jdouble density, jfloat refreshRate)
+                              jdouble scaledDensity, jdouble density)
 {
     Q_UNUSED(availableLeftPixels)
     Q_UNUSED(availableTopPixels)
@@ -558,7 +558,6 @@ static void setDisplayMetrics(JNIEnv * /*env*/, jclass /*clazz*/, jint screenWid
     } else {
         m_androidPlatformIntegration->setScreenSizeParameters(physicalSize, screenSize,
                                                               availableGeometry);
-        m_androidPlatformIntegration->setRefreshRate(refreshRate);
     }
 }
 Q_DECLARE_JNI_NATIVE_METHOD(setDisplayMetrics)

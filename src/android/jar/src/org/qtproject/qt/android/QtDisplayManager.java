@@ -36,7 +36,7 @@ class QtDisplayManager {
                                                 int availableLeftPixels, int availableTopPixels,
                                                 int availableWidthPixels, int availableHeightPixels,
                                                 double XDpi, double YDpi, double scaledDensity,
-                                                double density, float refreshRate);
+                                                double density);
     static native void handleOrientationChanged(int newRotation, int nativeOrientation);
     static native void handleRefreshRateChanged(float refreshRate);
     static native void handleUiDarkModeChanged(int newUiMode);
@@ -64,11 +64,7 @@ class QtDisplayManager {
 
             @Override
             public void onDisplayChanged(int displayId) {
-                Display display = (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
-                        ? m_activity.getWindowManager().getDefaultDisplay()
-                        : m_activity.getDisplay();
-                float refreshRate = getRefreshRate(display);
-                QtDisplayManager.handleRefreshRateChanged(refreshRate);
+                updateRefreshRate(m_activity);
                 QtDisplayManager.handleScreenChanged(displayId);
             }
 
@@ -77,6 +73,24 @@ class QtDisplayManager {
                 QtDisplayManager.handleScreenRemoved(displayId);
             }
         };
+    }
+
+    @SuppressWarnings("deprecation")
+    static void updateRefreshRate(Context context)
+    {
+        Display display;
+        Activity activity = (Activity) context;
+        if (activity != null) {
+            display = (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
+                            ? activity.getWindowManager().getDefaultDisplay()
+                            : activity.getDisplay();
+        } else {
+            final DisplayManager dm = context.getSystemService(DisplayManager.class);
+            display = dm.getDisplay(Display.DEFAULT_DISPLAY);
+        }
+
+        float refreshRate = display != null ? display.getRefreshRate() : 60.0f;
+        QtDisplayManager.handleRefreshRateChanged(refreshRate);
     }
 
     static void handleOrientationChange(Activity activity)
@@ -106,11 +120,6 @@ class QtDisplayManager {
             return Configuration.ORIENTATION_LANDSCAPE;
 
         return Configuration.ORIENTATION_PORTRAIT;
-    }
-
-    static float getRefreshRate(Display display)
-    {
-        return display != null ? display.getRefreshRate() : 60.0f;
     }
 
     void registerDisplayListener()
@@ -306,7 +315,7 @@ class QtDisplayManager {
 
         setDisplayMetrics(maxWidth, maxHeight, insetLeft, insetTop,
                 width, height, getXDpi(displayMetrics), getYDpi(displayMetrics),
-                scaledDensity, density, getRefreshRate(display));
+                scaledDensity, density);
     }
 
     static float getXDpi(final DisplayMetrics metrics) {
