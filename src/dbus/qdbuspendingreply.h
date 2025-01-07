@@ -17,7 +17,12 @@ class Q_DBUS_EXPORT QDBusPendingReplyBase : public QDBusPendingCall
 {
 protected:
     QDBusPendingReplyBase();
+#if QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
     ~QDBusPendingReplyBase();
+    QDBusPendingReplyBase(const QDBusPendingReplyBase &) = default;
+    QDBusPendingReplyBase &operator=(const QDBusPendingReplyBase &) = default;
+#endif
+
     void assign(const QDBusPendingCall &call);
     void assign(const QDBusMessage &message);
 
