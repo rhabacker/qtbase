@@ -72,7 +72,6 @@ public:
     QPageLayoutPrivate(const QPageSize &pageSize, QPageLayout::Orientation orientation,
                        const QMarginsF &margins, QPageLayout::Unit units,
                        const QMarginsF &minMargins);
-    ~QPageLayoutPrivate();
 
     bool operator==(const QPageLayoutPrivate &other) const;
     bool isEquivalentTo(const QPageLayoutPrivate &other) const;
@@ -122,10 +121,6 @@ QPageLayoutPrivate::QPageLayoutPrivate(const QPageSize &pageSize, QPageLayout::O
 {
     m_fullSize = fullSizeUnits(m_units);
     setDefaultMargins(minMargins);
-}
-
-QPageLayoutPrivate::~QPageLayoutPrivate()
-{
 }
 
 bool QPageLayoutPrivate::operator==(const QPageLayoutPrivate &other) const
