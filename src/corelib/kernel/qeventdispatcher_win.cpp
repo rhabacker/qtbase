@@ -428,7 +428,7 @@ QEventDispatcherWin32::QEventDispatcherWin32(QObject *parent)
 }
 
 QEventDispatcherWin32::QEventDispatcherWin32(QEventDispatcherWin32Private &dd, QObject *parent)
-    : QAbstractEventDispatcher(dd, parent)
+    : QAbstractEventDispatcherV2(dd, parent)
 {
     Q_D(QEventDispatcherWin32);
 
@@ -670,10 +670,11 @@ void QEventDispatcherWin32::doUnregisterSocketNotifier(QSocketNotifier *notifier
     delete sn;
 }
 
-void QEventDispatcherWin32::registerTimer(int timerId, qint64 interval, Qt::TimerType timerType, QObject *object)
+void QEventDispatcherWin32::registerTimer(Qt::TimerId timerId, Duration interval,
+                                          Qt::TimerType timerType, QObject *object)
 {
 #ifndef QT_NO_DEBUG
-    if (timerId < 1 || interval < 0 || !object) {
+    if (qToUnderlying(timerId) < 1 || interval.count() < 0 || !object) {
         qWarning("QEventDispatcherWin32::registerTimer: invalid arguments");
         return;
     }
@@ -690,10 +691,13 @@ void QEventDispatcherWin32::registerTimer(int timerId, qint64 interval, Qt::Time
     if (d->closingDown)
         return;
 
+    using namespace std::chrono;
+
     WinTimerInfo *t = new WinTimerInfo;
     t->dispatcher = this;
-    t->timerId  = timerId;
-    t->interval = interval;
+    t->timerId  = qToUnderlying(timerId);
+    // Windows does not have a ns-resolution timer
+    t->interval = ceil<milliseconds>(interval).count();
     t->timerType = timerType;
     t->obj  = object;
     t->inTimerEvent = false;
@@ -704,10 +708,10 @@ void QEventDispatcherWin32::registerTimer(int timerId, qint64 interval, Qt::Time
     d->timerDict.insert(t->timerId, t);          // store timers in dict
 }
 
-bool QEventDispatcherWin32::unregisterTimer(int timerId)
+bool QEventDispatcherWin32::unregisterTimer(Qt::TimerId timerId)
 {
 #ifndef QT_NO_DEBUG
-    if (timerId < 1) {
+    if (qToUnderlying(timerId) < 1) {
         qWarning("QEventDispatcherWin32::unregisterTimer: invalid argument");
         return false;
     }
@@ -719,7 +723,7 @@ bool QEventDispatcherWin32::unregisterTimer(int timerId)
 
     Q_D(QEventDispatcherWin32);
 
-    WinTimerInfo *t = d->timerDict.take(timerId);
+    WinTimerInfo *t = d->timerDict.take(qToUnderlying(timerId));
     if (!t)
         return false;
 
@@ -758,50 +762,55 @@ bool QEventDispatcherWin32::unregisterTimers(QObject *object)
     return true;
 }
 
-QList<QEventDispatcherWin32::TimerInfo>
-QEventDispatcherWin32::registeredTimers(QObject *object) const
+QList<QEventDispatcherWin32::TimerInfoV2>
+QEventDispatcherWin32::timersForObject(QObject *object) const
 {
 #ifndef QT_NO_DEBUG
     if (!object) {
         qWarning("QEventDispatcherWin32:registeredTimers: invalid argument");
-        return QList<TimerInfo>();
+        return QList<TimerInfoV2>();
     }
 #endif
 
     Q_D(const QEventDispatcherWin32);
-    QList<TimerInfo> list;
+    QList<TimerInfoV2> list;
     for (WinTimerInfo *t : std::as_const(d->timerDict)) {
         Q_ASSERT(t);
-        if (t->obj == object)
-            list << TimerInfo(t->timerId, t->interval, t->timerType);
+        if (t->obj == object) {
+            list << TimerInfoV2{std::chrono::milliseconds{t->interval},
+                                Qt::TimerId{t->timerId},
+                                t->timerType};
+        }
     }
     return list;
 }
 
-int QEventDispatcherWin32::remainingTime(int timerId)
+QEventDispatcherWin32::Duration QEventDispatcherWin32::remainingTime(Qt::TimerId timerId) const
 {
 #ifndef QT_NO_DEBUG
-    if (timerId < 1) {
+    if (qToUnderlying(timerId) < 1) {
         qWarning("QEventDispatcherWin32::remainingTime: invalid argument");
-        return -1;
+        return Duration::min();
     }
 #endif
 
-    Q_D(QEventDispatcherWin32);
+    Q_D(const QEventDispatcherWin32);
 
-    quint64 currentTime = qt_msectime();
-
-    WinTimerInfo *t = d->timerDict.value(timerId);
+    WinTimerInfo *t = d->timerDict.value(qToUnderlying(timerId));
     if (t) {
         // timer found, return time to wait
-        return t->timeout > currentTime ? t->timeout - currentTime : 0;
+        using namespace std::chrono;
+        using namespace std::chrono_literals;
+        const Duration currentTimeNs = steady_clock::now().time_since_epoch();
+        const Duration timeoutNs = Duration{t->timeout * 1ms};
+        return timeoutNs > currentTimeNs ? timeoutNs - currentTimeNs : 0ns;
     }
 
 #ifndef QT_NO_DEBUG
-    qWarning("QEventDispatcherWin32::remainingTime: timer id %d not found", timerId);
+    qWarning("QEventDispatcherWin32::remainingTime: timer id %d not found", qToUnderlying(timerId));
 #endif
 
-    return -1;
+    return Duration::min();
 }
 
 void QEventDispatcherWin32::wakeUp()
