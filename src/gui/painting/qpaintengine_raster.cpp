@@ -515,7 +515,7 @@ QRasterPaintEngineState::QRasterPaintEngineState()
     dirty = 0;
 }
 
-QRasterPaintEngineState::QRasterPaintEngineState(QRasterPaintEngineState &s)
+QRasterPaintEngineState::QRasterPaintEngineState(const QRasterPaintEngineState &s)
     : QPainterState(s)
     , lastPen(s.lastPen)
     , penData(s.penData)
