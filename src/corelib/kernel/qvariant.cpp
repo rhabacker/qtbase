@@ -4,41 +4,40 @@
 // SPDX-License-Identifier: LicenseRef-Qt-Commercial OR LGPL-3.0-only OR GPL-2.0-only OR GPL-3.0-only
 
 #include "qvariant_p.h"
+
+#include "private/qlocale_p.h"
+#include "qmetatype_p.h"
+
+#if QT_CONFIG(itemmodel)
+#include "qabstractitemmodel.h"
+#endif
 #include "qbitarray.h"
 #include "qbytearray.h"
+#include "qbytearraylist.h"
+#include "qcborarray.h"
+#include "qcborcommon.h"
+#include "qcbormap.h"
 #include "qdatastream.h"
-#include "qdebug.h"
-#include "qmap.h"
-#include "qhash.h"
 #include "qdatetime.h"
+#include "qdebug.h"
 #if QT_CONFIG(easingcurve)
 #include "qeasingcurve.h"
 #endif
+#include "qhash.h"
+#include "qjsonarray.h"
+#include "qjsondocument.h"
+#include "qjsonobject.h"
+#include "qjsonvalue.h"
 #include "qlist.h"
+#include "qlocale.h"
+#include "qmap.h"
 #if QT_CONFIG(regularexpression)
 #include "qregularexpression.h"
 #endif
 #include "qstring.h"
 #include "qstringlist.h"
 #include "qurl.h"
-#include "qlocale.h"
 #include "quuid.h"
-#if QT_CONFIG(itemmodel)
-#include "qabstractitemmodel.h"
-#endif
-#ifndef QT_BOOTSTRAPPED
-#include "qcborarray.h"
-#include "qcborcommon.h"
-#include "qcbormap.h"
-#include "qjsonvalue.h"
-#include "qjsonobject.h"
-#include "qjsonarray.h"
-#include "qjsondocument.h"
-#include "qbytearraylist.h"
-#endif
-#include "private/qlocale_p.h"
-#include "qmetatype_p.h"
-#include <qmetaobject.h>
 
 #ifndef QT_NO_GEOM_VARIANT
 #include "qsize.h"
@@ -48,9 +47,7 @@
 #endif
 
 #include <memory>
-
 #include <cmath>
-#include <float.h>
 #include <cstring>
 
 QT_BEGIN_NAMESPACE
@@ -88,12 +85,10 @@ static qlonglong qMetaTypeNumber(const QVariant::Private *d)
         return qRound64(d->get<float>());
     case QMetaType::Double:
         return qRound64(d->get<double>());
-#ifndef QT_BOOTSTRAPPED
     case QMetaType::QJsonValue:
         return d->get<QJsonValue>().toDouble();
     case QMetaType::QCborValue:
         return d->get<QCborValue>().toInteger();
-#endif
     }
     Q_UNREACHABLE_RETURN(0);
 }
@@ -137,7 +132,6 @@ static std::optional<qlonglong> qConvertToNumber(const QVariant::Private *d, boo
         return std::nullopt;
     case QMetaType::Bool:
         return qlonglong(d->get<bool>());
-#ifndef QT_BOOTSTRAPPED
     case QMetaType::QCborValue:
         if (!d->get<QCborValue>().isInteger() && !d->get<QCborValue>().isDouble())
             break;
@@ -146,7 +140,6 @@ static std::optional<qlonglong> qConvertToNumber(const QVariant::Private *d, boo
         if (!d->get<QJsonValue>().isDouble())
             break;
         Q_FALLTHROUGH();
-#endif
     case QMetaType::Double:
     case QMetaType::Int:
     case QMetaType::Char:
@@ -195,12 +188,10 @@ static std::optional<double> qConvertToRealNumber(const QVariant::Private *d)
     case QMetaType::UShort:
     case QMetaType::ULong:
         return double(qMetaTypeUNumber(d));
-#ifndef QT_BOOTSTRAPPED
     case QMetaType::QCborValue:
         return d->get<QCborValue>().toDouble();
     case QMetaType::QJsonValue:
         return d->get<QJsonValue>().toDouble();
-#endif
     default:
         // includes enum conversion as well as invalid types
         if (std::optional<qlonglong> l = qConvertToNumber(d))
@@ -943,9 +934,7 @@ QVariant::QVariant(double val) noexcept : d(std::piecewise_construct_t{}, val) {
 QVariant::QVariant(float val) noexcept : d(std::piecewise_construct_t{}, val) {}
 
 QVariant::QVariant(const QByteArray &val) noexcept : d(std::piecewise_construct_t{}, val) {}
-#ifndef QT_BOOTSTRAPPED
 QVariant::QVariant(const QBitArray &val) noexcept : d(std::piecewise_construct_t{}, val) {}
-#endif
 QVariant::QVariant(const QString &val) noexcept : d(std::piecewise_construct_t{}, val) {}
 QVariant::QVariant(QChar val) noexcept : d(std::piecewise_construct_t{}, val) {}
 QVariant::QVariant(const QStringList &val) noexcept : d(std::piecewise_construct_t{}, val) {}
@@ -981,22 +970,18 @@ QVariant::QVariant(QSize s) noexcept
 QVariant::QVariant(QSizeF s) noexcept(Private::FitsInInternalSize<sizeof(qreal) * 2>)
     : d(std::piecewise_construct_t{}, s) {}
 #endif
-#ifndef QT_BOOTSTRAPPED
 QVariant::QVariant(const QUrl &u) noexcept : d(std::piecewise_construct_t{}, u) {}
-#endif
 QVariant::QVariant(const QLocale &l) noexcept : d(std::piecewise_construct_t{}, l) {}
 #if QT_CONFIG(regularexpression)
 QVariant::QVariant(const QRegularExpression &re) noexcept : d(std::piecewise_construct_t{}, re) {}
 #endif // QT_CONFIG(regularexpression)
 QVariant::QVariant(QUuid uuid) noexcept(Private::FitsInInternalSize<16>) : d(std::piecewise_construct_t{}, uuid) {}
-#ifndef QT_BOOTSTRAPPED
 QVariant::QVariant(const QJsonValue &jsonValue) noexcept(Private::FitsInInternalSize<sizeof(CborValueStandIn)>)
     : d(std::piecewise_construct_t{}, jsonValue)
 { static_assert(sizeof(CborValueStandIn) == sizeof(QJsonValue)); }
 QVariant::QVariant(const QJsonObject &jsonObject) noexcept : d(std::piecewise_construct_t{}, jsonObject) {}
 QVariant::QVariant(const QJsonArray &jsonArray) noexcept : d(std::piecewise_construct_t{}, jsonArray) {}
 QVariant::QVariant(const QJsonDocument &jsonDocument) : d(std::piecewise_construct_t{}, jsonDocument) {}
-#endif // QT_BOOTSTRAPPED
 #if QT_CONFIG(itemmodel)
 QVariant::QVariant(const QModelIndex &modelIndex) noexcept(Private::FitsInInternalSize<8 + 2 * sizeof(quintptr)>)
     : d(std::piecewise_construct_t{}, modelIndex) {}
@@ -1690,7 +1675,6 @@ QPointF QVariant::toPointF() const
 
 #endif // QT_NO_GEOM_VARIANT
 
-#ifndef QT_BOOTSTRAPPED
 /*!
     \fn QUrl QVariant::toUrl() const
 
@@ -1703,7 +1687,6 @@ QUrl QVariant::toUrl() const
 {
     return qvariant_cast<QUrl>(*this);
 }
-#endif
 
 /*!
     \fn QLocale QVariant::toLocale() const
@@ -1776,7 +1759,6 @@ QUuid QVariant::toUuid() const
     return qvariant_cast<QUuid>(*this);
 }
 
-#ifndef QT_BOOTSTRAPPED
 /*!
     \since 5.0
 
@@ -1828,7 +1810,6 @@ QJsonDocument QVariant::toJsonDocument() const
 {
     return qvariant_cast<QJsonDocument>(*this);
 }
-#endif // QT_BOOTSTRAPPED
 
 /*!
     \fn QChar QVariant::toChar() const
@@ -1844,7 +1825,6 @@ QChar QVariant::toChar() const
     return qvariant_cast<QChar>(*this);
 }
 
-#ifndef QT_BOOTSTRAPPED
 /*!
     Returns the variant as a QBitArray if the variant has userType()
     \l QMetaType::QBitArray; otherwise returns an empty bit array.
@@ -1855,7 +1835,6 @@ QBitArray QVariant::toBitArray() const
 {
     return qvariant_cast<QBitArray>(*this);
 }
-#endif // QT_BOOTSTRAPPED
 
 template <typename T>
 inline T qNumVariantToHelper(const QVariant::Private &d, bool *ok)
@@ -2370,7 +2349,6 @@ static QPartialOrdering numericCompare(const QVariant::Private *d1, const QVaria
     return spaceShip(*r1, *r2);
 }
 
-#ifndef QT_BOOTSTRAPPED
 static bool qvCanConvertMetaObject(QMetaType fromType, QMetaType toType)
 {
     if ((fromType.flags() & QMetaType::PointerToQObject)
@@ -2386,7 +2364,6 @@ static QPartialOrdering pointerCompare(const QVariant::Private *d1, const QVaria
 {
     return spaceShip<QObject *>(d1->get<QObject *>(), d2->get<QObject *>());
 }
-#endif
 
 /*!
     \internal
@@ -2399,11 +2376,9 @@ bool QVariant::equals(const QVariant &v) const
         // try numeric comparisons, with C++ type promotion rules (no conversion)
         if (canBeNumericallyCompared(metatype.iface(), v.d.type().iface()))
             return numericCompare(&d, &v.d) == QPartialOrdering::Equivalent;
-#ifndef QT_BOOTSTRAPPED
         // if both types are related pointers to QObjects, check if they point to the same object
         if (qvCanConvertMetaObject(metatype, v.metaType()))
             return pointerCompare(&d, &v.d) == QPartialOrdering::Equivalent;
-#endif
         return false;
     }
 
@@ -2443,10 +2418,8 @@ QPartialOrdering QVariant::compare(const QVariant &lhs, const QVariant &rhs)
         // try numeric comparisons, with C++ type promotion rules (no conversion)
         if (canBeNumericallyCompared(lhs.d.type().iface(), rhs.d.type().iface()))
             return numericCompare(&lhs.d, &rhs.d);
-#ifndef QT_BOOTSTRAPPED
         if (qvCanConvertMetaObject(lhs.metaType(), rhs.metaType()))
             return pointerCompare(&lhs.d, &rhs.d);
-#endif
         return QPartialOrdering::Unordered;
     }
     return t.compare(lhs.constData(), rhs.constData());
