@@ -107,8 +107,10 @@ public:
     using rvalue_ref = T &&;
 #endif
 
-    DataPointer &data_ptr() { return d; }
-    const DataPointer &data_ptr() const { return d; }
+    DataPointer &data_ptr() &             { return d; }
+    const DataPointer &data_ptr() const & { return d; }
+    DataPointer &&data_ptr() &&           { return std::move(d); }
+    // No current use-case for a `const &&` overload
 
     class const_iterator;
     class iterator {

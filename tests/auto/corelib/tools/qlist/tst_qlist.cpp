@@ -265,6 +265,7 @@ private slots:
     void countCustom() const { count<Custom>(); }
     void cpp17ctad() const;
     void data() const;
+    void reinterpreted() const;
     void emptyInt() const { empty<int>(); }
     void emptyMovable() const { empty<Movable>(); }
     void emptyCustom() const { empty<Custom>(); }
@@ -776,7 +777,7 @@ void tst_QList::assignEmpty() const
     using T = int;
     QList<T> list;
     QList<T> ref1 = list;
-    QVERIFY(list.d.needsDetach());
+    QVERIFY(list.data_ptr().needsDetach());
     list.assign(list.begin(), list.begin());
 
 #if !defined Q_OS_QNX // QNX has problems with the empty istream_iterator
@@ -784,7 +785,7 @@ void tst_QList::assignEmpty() const
     list.squeeze();
     QCOMPARE_EQ(list.capacity(), 0);
     ref1 = list;
-    QVERIFY(list.d.needsDetach());
+    QVERIFY(list.data_ptr().needsDetach());
     list.assign(empty, empty);
 #endif
 }
@@ -1338,6 +1339,29 @@ void tst_QList::data() const
     const QList<int> constVec = myvec;
     QCOMPARE(memcmp(constVec.data(), reinterpret_cast<const int *>(&arr), sizeof(int) * 3), 0);
     QVERIFY(!constVec.isDetached()); // const data() does not detach()
+}
+
+void tst_QList::reinterpreted() const
+{
+    const QList<char16_t> expected = {char16_t(42), char16_t(43), char16_t(44)};
+    {
+        QList<ushort> t = {42, 43, 44};
+        const auto size = t.size();
+        QList<char16_t> x = std::move(t.data_ptr()).reinterpreted<char16_t>();
+
+        QVERIFY(t.data_ptr().isNull());
+        QCOMPARE(x.size(), size);
+        QCOMPARE_EQ(x, expected);
+    }
+    {
+        QList<ushort> t = {42, 43, 44};
+        const auto size = t.size();
+        QList<char16_t> x = std::move(t).data_ptr().reinterpreted<char16_t>();
+
+        QVERIFY(t.data_ptr().isNull());
+        QCOMPARE(x.size(), size);
+        QCOMPARE_EQ(x, expected);
+    }
 }
 
 template<typename T>
