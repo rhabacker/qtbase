@@ -80,11 +80,13 @@ struct QMetaTypeDeleter
         }
     }
 };
+} // namespace
 
+#ifndef QT_BOOTSTRAPPED
+namespace {
 struct QMetaTypeCustomRegistry
 {
-
-#if QT_VERSION < QT_VERSION_CHECK(7, 0, 0) && !defined(QT_BOOTSTRAPPED)
+#if QT_VERSION < QT_VERSION_CHECK(7, 0, 0)
     QMetaTypeCustomRegistry()
     {
         /* qfloat16 was neither a builtin, nor unconditionally registered
@@ -165,7 +167,6 @@ struct QMetaTypeCustomRegistry
 };
 
 Q_GLOBAL_STATIC(QMetaTypeCustomRegistry, customTypeRegistry)
-
 } // namespace
 
 // used by QVariant::save(): returns the name used in the Q_DECLARE_METATYPE
@@ -205,6 +206,7 @@ const char *QtMetaTypePrivate::typedefNameForType(const QtPrivate::QMetaTypeInte
 
     return name;
 }
+#endif // !QT_BOOTSTRAPPED
 
 /*!
     \macro Q_DECLARE_OPAQUE_POINTER(PointerType)
@@ -540,6 +542,7 @@ const char *QtMetaTypePrivate::typedefNameForType(const QtPrivate::QMetaTypeInte
 
     \sa qRegisterMetaType()
  */
+#ifndef QT_BOOTSTRAPPED
 /*!
     \internal
     Out-of-line path for registerType() and slow path id().
@@ -553,6 +556,7 @@ int QMetaType::registerHelper(const QtPrivate::QMetaTypeInterface *iface)
     }
     return 0;
 }
+#endif
 
 /*!
     \fn constexpr qsizetype QMetaType::sizeOf() const
@@ -887,7 +891,7 @@ bool QMetaType::isOrdered() const
     return d_ptr && (d_ptr->flags & QMetaType::IsPointer || d_ptr->lessThan != nullptr);
 }
 
-
+#ifndef QT_BOOTSTRAPPED
 /*!
    \internal
 */
@@ -910,6 +914,7 @@ void QMetaType::unregisterMetaType(QMetaType type)
 
     const_cast<QtPrivate::QMetaTypeInterface *>(d_ptr)->typeId.storeRelease(0);
 }
+#endif
 
 /*!
     \fn template<typename T> QMetaType QMetaType::fromType()
@@ -2758,6 +2763,7 @@ static inline int qMetaTypeStaticType(const char *typeName, int length)
     return types[i].type;
 }
 
+#ifndef QT_BOOTSTRAPPED
 /*
     Similar to QMetaType::type(), but only looks in the custom set of
     types, and doesn't lock the mutex.
@@ -2797,14 +2803,16 @@ void QMetaType::registerNormalizedTypedef(const NS(QByteArray) & normalizedTypeN
         al = metaType.d_ptr;
     }
 }
-
+#endif // !QT_BOOTSTRAPPED
 
 static const QtPrivate::QMetaTypeInterface *interfaceForTypeNoWarning(int typeId)
 {
     const QtPrivate::QMetaTypeInterface *iface = nullptr;
     if (typeId >= QMetaType::User) {
+#ifndef QT_BOOTSTRAPPED
         if (customTypeRegistry.exists())
             iface = customTypeRegistry->getCustomType(typeId);
+#endif
     } else {
         if (auto moduleHelper = qModuleHelperForType(typeId))
             iface = moduleHelper->interfaceForType(typeId);
@@ -2836,6 +2844,7 @@ static inline int qMetaTypeTypeImpl(const char *typeName, int length)
         return QMetaType::UnknownType;
     int type = qMetaTypeStaticType(typeName, length);
     if (type == QMetaType::UnknownType) {
+#ifndef QT_BOOTSTRAPPED
         QReadLocker locker(&customTypeRegistry()->lock);
         type = qMetaTypeCustomType_unlocked(typeName, length);
 #ifndef QT_NO_QOBJECT
@@ -2848,6 +2857,7 @@ static inline int qMetaTypeTypeImpl(const char *typeName, int length)
                                                     normalizedTypeName.size());
             }
         }
+#endif
 #endif
     }
     return type;

@@ -1351,6 +1351,10 @@ int qRegisterNormalizedMetaType(const QT_PREPEND_NAMESPACE(QByteArray) &normaliz
     return qRegisterNormalizedMetaTypeImplementation<T>(normalizedTypeName);
 }
 
+#if defined(QT_BOOTSTRAPPED)
+#define QT_DECL_METATYPE_EXTERN_TAGGED(TYPE, TAG, EXPORT)
+#define QT_IMPL_METATYPE_EXTERN_TAGGED(TYPE, TAG)
+#else
 #define QT_DECL_METATYPE_EXTERN_TAGGED(TYPE, TAG, EXPORT) \
     QT_BEGIN_NAMESPACE \
     EXPORT int qRegisterNormalizedMetaType_ ## TAG (const QByteArray &); \
@@ -1363,6 +1367,7 @@ int qRegisterNormalizedMetaType(const QT_PREPEND_NAMESPACE(QByteArray) &normaliz
     int qRegisterNormalizedMetaType_ ## TAG (const QByteArray &name) \
     { return qRegisterNormalizedMetaTypeImplementation< TYPE >(name); } \
     /* end */
+#endif
 #define QT_DECL_METATYPE_EXTERN(TYPE, EXPORT) \
     QT_DECL_METATYPE_EXTERN_TAGGED(TYPE, TYPE, EXPORT)
 #define QT_IMPL_METATYPE_EXTERN(TYPE) \
