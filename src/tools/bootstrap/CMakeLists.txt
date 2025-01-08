@@ -29,7 +29,6 @@ qt_internal_extend_target(Bootstrap
         ../../corelib/io/qfsfileengine.cpp
         ../../corelib/io/qfsfileengine_iterator.cpp
         ../../corelib/io/qiodevice.cpp
-        ../../corelib/io/qstandardpaths.cpp
         ../../corelib/kernel/qcoreapplication.cpp
         ../../corelib/kernel/qmetatype.cpp
         ../../corelib/kernel/qsystemerror.cpp
@@ -112,8 +111,6 @@ qt_internal_extend_target(Bootstrap CONDITION WIN32
         ../../corelib/io/qfilesystemengine_win.cpp
         ../../corelib/io/qfilesystemiterator_win.cpp
         ../../corelib/io/qfsfileengine_win.cpp
-        ../../corelib/io/qstandardpaths_win.cpp
-        ../../corelib/kernel/qcoreapplication_win.cpp
         ../../corelib/kernel/qfunctions_win.cpp
     PUBLIC_LIBRARIES
         advapi32
@@ -134,7 +131,6 @@ qt_internal_extend_target(Bootstrap CONDITION APPLE
         ../../corelib/global/qoperatingsystemversion_darwin.mm
         ../../corelib/kernel/qcore_foundation.mm
         ../../corelib/kernel/qcore_mac.mm
-        ../../corelib/kernel/qcoreapplication_mac.cpp
         ../../corelib/tools/qversionnumber.cpp
     PUBLIC_LIBRARIES
         ${FWFoundation}
@@ -142,7 +138,6 @@ qt_internal_extend_target(Bootstrap CONDITION APPLE
 
 qt_internal_extend_target(Bootstrap CONDITION MACOS
     SOURCES
-        ../../corelib/io/qstandardpaths_mac.mm
     LIBRARIES
         ${FWCoreServices}
 )
@@ -150,11 +145,6 @@ qt_internal_extend_target(Bootstrap CONDITION MACOS
 qt_internal_extend_target(Bootstrap CONDITION UIKIT
     LIBRARIES
         ${FWUIKit}
-)
-
-qt_internal_extend_target(Bootstrap CONDITION UNIX AND NOT MACOS
-    SOURCES
-        ../../corelib/io/qstandardpaths_unix.cpp
 )
 
 qt_internal_extend_target(Bootstrap CONDITION CMAKE_CROSSCOMPILING OR NOT QT_FEATURE_system_pcre2

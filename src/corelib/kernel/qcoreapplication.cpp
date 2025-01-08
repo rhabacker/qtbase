@@ -146,7 +146,7 @@ Q_CONSTINIT static QBasicAtomicPointer<QCoreApplication> g_self = nullptr;
 #  define qApp g_self.loadRelaxed()
 #endif
 
-#if !defined(Q_OS_WIN)
+#if !defined(Q_OS_WIN) || defined(QT_BOOTSTRAPPED)
 #ifdef Q_OS_DARWIN
 QString QCoreApplicationPrivate::infoDictionaryStringProperty(const QString &propertyName)
 {
@@ -175,8 +175,7 @@ QString QCoreApplicationPrivate::appName() const
 QString QCoreApplicationPrivate::appVersion() const
 {
     QString applicationVersion;
-#ifdef QT_BOOTSTRAPPED
-#elif defined(Q_OS_DARWIN)
+#if defined(Q_OS_DARWIN)
     applicationVersion = infoDictionaryStringProperty(QStringLiteral("CFBundleVersion"));
 #elif defined(Q_OS_ANDROID)
     QJniObject context(QNativeInterface::QAndroidApplication::context());
@@ -199,7 +198,7 @@ QString QCoreApplicationPrivate::appVersion() const
 #endif
     return applicationVersion;
 }
-#endif // !Q_OS_WIN
+#endif // !Q_OS_WIN || QT_BOOTSTRAPPED
 
 Q_CONSTINIT QString *QCoreApplicationPrivate::cachedApplicationFilePath = nullptr;
 
@@ -476,7 +475,7 @@ QCoreApplicationPrivate::~QCoreApplicationPrivate()
 #ifndef QT_NO_QOBJECT
     cleanupThreadData();
 #endif
-#if defined(Q_OS_WIN)
+#if defined(Q_OS_WIN) && !defined(QT_BOOTSTRAPPED)
     delete [] origArgv;
     cleanupDebuggingConsole();
 #endif
@@ -798,7 +797,7 @@ void Q_TRACE_INSTRUMENT(qtcore) QCoreApplicationPrivate::init()
 
     Q_Q(QCoreApplication);
 
-#ifdef Q_OS_WINDOWS
+#if defined(Q_OS_WIN) && !defined(QT_BOOTSTRAPPED)
     initDebuggingConsole();
 #endif
 
@@ -2359,6 +2358,7 @@ QString QCoreApplication::translate(const char *context, const char *sourceText,
 
 #endif //QT_NO_TRANSLATION
 
+#ifndef QT_BOOTSTRAPPED
 // Makes it possible to point QCoreApplication to a custom location to ensure
 // the directory is added to the patch, and qt.conf and deployed plugins are
 // found from there. This is for use cases in which QGuiApplication is
@@ -2501,6 +2501,7 @@ QString QCoreApplication::applicationFilePath()
     }
     return QString();
 }
+#endif // !QT_BOOTSTRAPPED
 
 /*!
     \since 4.4
