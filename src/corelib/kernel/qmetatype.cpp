@@ -983,6 +983,7 @@ static constexpr struct : QMetaTypeModuleHelper
         }
     }
 
+#ifndef QT_BOOTSTRAPPED
     bool convert(const void *from, int fromTypeId, void *to, int toTypeId) const override
     {
         Q_ASSERT(fromTypeId != toTypeId);
@@ -1015,7 +1016,6 @@ static constexpr struct : QMetaTypeModuleHelper
     QMETATYPE_CONVERTER(To, From, result = double(source); return true;)
 #define QMETATYPE_CONVERTER_ASSIGN_NUMBER(To, From) \
     QMETATYPE_CONVERTER(To, From, result = To::number(source); return true;)
-#ifndef QT_BOOTSTRAPPED
 #define CONVERT_CBOR_AND_JSON(To) \
     QMETATYPE_CONVERTER(To, QCborValue, \
         if constexpr(std::is_same_v<To, Bool>) { \
@@ -1047,9 +1047,6 @@ static constexpr struct : QMetaTypeModuleHelper
         } \
         return true; \
     )
-#else
-#define CONVERT_CBOR_AND_JSON(To)
-#endif
 
 #define INTEGRAL_CONVERTER(To) \
     QMETATYPE_CONVERTER_ASSIGN(To, Bool); \
@@ -1134,7 +1131,6 @@ static constexpr struct : QMetaTypeModuleHelper
         FLOAT_CONVERTER(Float);
         FLOAT_CONVERTER(Double);
 
-#ifndef QT_BOOTSTRAPPED
         QMETATYPE_CONVERTER_ASSIGN(QUrl, QString);
         QMETATYPE_CONVERTER(QUrl, QCborValue,
             if (source.isUrl()) {
@@ -1143,7 +1139,6 @@ static constexpr struct : QMetaTypeModuleHelper
              }
             return false;
         );
-#endif
 #if QT_CONFIG(itemmodel)
         QMETATYPE_CONVERTER_ASSIGN(QModelIndex, QPersistentModelIndex);
         QMETATYPE_CONVERTER_ASSIGN(QPersistentModelIndex, QModelIndex);
@@ -1221,7 +1216,6 @@ static constexpr struct : QMetaTypeModuleHelper
         QMETATYPE_CONVERTER(QString, QStringList,
             return (source.size() == 1) ? (result = source.at(0), true) : false;
         );
-#ifndef QT_BOOTSTRAPPED
         QMETATYPE_CONVERTER(QString, QUrl, result = source.toString(); return true;);
         QMETATYPE_CONVERTER(QString, QJsonValue,
             if (source.isString() || source.isNull()) {
@@ -1230,7 +1224,6 @@ static constexpr struct : QMetaTypeModuleHelper
             }
             return false;
         );
-#endif
         QMETATYPE_CONVERTER(QString, Nullptr, Q_UNUSED(source); result = QString(); return true;);
 
         // QByteArray
@@ -1260,12 +1253,10 @@ static constexpr struct : QMetaTypeModuleHelper
         );
         QMETATYPE_CONVERTER(QByteArray, Nullptr, Q_UNUSED(source); result = QByteArray(); return true;);
 
-#ifndef QT_BOOTSTRAPPED
         QMETATYPE_CONVERTER(QString, QUuid, result = source.toString(); return true;);
         QMETATYPE_CONVERTER(QUuid, QString, result = QUuid(source); return true;);
         QMETATYPE_CONVERTER(QByteArray, QUuid, result = source.toByteArray(); return true;);
         QMETATYPE_CONVERTER(QUuid, QByteArray, result = QUuid(source); return true;);
-#endif
 
 #ifndef QT_NO_GEOM_VARIANT
         QMETATYPE_CONVERTER(QSize, QSizeF, result = source.toSize(); return true;);
@@ -1280,7 +1271,6 @@ static constexpr struct : QMetaTypeModuleHelper
 
         QMETATYPE_CONVERTER(QStringList, QString, result = QStringList() << source; return true;);
 
-#ifndef QT_NO_VARIANT
         QMETATYPE_CONVERTER(QByteArrayList, QVariantList,
             result.reserve(source.size());
             for (const auto &v: source)
@@ -1317,8 +1307,6 @@ static constexpr struct : QMetaTypeModuleHelper
                 result.insert(it.key(), it.value());
             return true;
         );
-#endif // !QT_NO_VARIANT
-#ifndef QT_BOOTSTRAPPED
         QMETATYPE_CONVERTER_ASSIGN(QCborValue, QString);
         QMETATYPE_CONVERTER(QString, QCborValue,
             if (source.isContainer() || source.isTag())
@@ -1637,8 +1625,6 @@ static constexpr struct : QMetaTypeModuleHelper
             return true;
         );
 
-#endif
-
         QMETATYPE_CONVERTER(QDate, QDateTime, result = source.date(); return true;);
         QMETATYPE_CONVERTER(QTime, QDateTime, result = source.time(); return true;);
         QMETATYPE_CONVERTER(QDateTime, QDate, result = source.startOfDay(); return true;);
@@ -1660,6 +1646,7 @@ static constexpr struct : QMetaTypeModuleHelper
         }
         return false;
     }
+#endif // !QT_BOOTSTRAPPED
 } metatypeHelper = {};
 
 Q_CONSTINIT Q_CORE_EXPORT const QMetaTypeModuleHelper *qMetaTypeGuiHelper = nullptr;
@@ -1676,6 +1663,7 @@ static const QMetaTypeModuleHelper *qModuleHelperForType(int type)
     return nullptr;
 }
 
+#ifndef QT_BOOTSTRAPPED
 template<typename T, typename Key>
 class QMetaTypeFunctionRegistry
 {
@@ -1841,6 +1829,7 @@ void QMetaType::unregisterConverterFunction(QMetaType from, QMetaType to)
         return;
     customTypesConversionRegistry()->remove(from.id(), to.id());
 }
+#endif // !QT_BOOTSTRAPPED
 
 #ifndef QT_NO_DEBUG_STREAM
 
@@ -1933,6 +1922,7 @@ static QMetaEnum metaEnumFromType(QMetaType t)
 }
 #endif
 
+#ifndef QT_BOOTSTRAPPED
 static bool convertFromEnum(QMetaType fromType, const void *from, QMetaType toType, void *to)
 {
     qlonglong ll;
@@ -2058,7 +2048,6 @@ static bool convertToEnum(QMetaType fromType, const void *from, QMetaType toType
     }
 }
 
-#ifndef QT_BOOTSTRAPPED
 static bool convertIterableToVariantList(QMetaType fromType, const void *from, void *to)
 {
     QSequentialIterable list;
@@ -2343,7 +2332,6 @@ static bool convertMetaObject(QMetaType fromType, const void *from, QMetaType to
     }
     return false;
 }
-#endif // !QT_BOOTSTRAPPED
 
 /*!
     \fn bool QMetaType::convert(const void *from, int fromTypeId, void *to, int toTypeId)
@@ -2400,8 +2388,6 @@ bool QMetaType::convert(QMetaType fromType, const void *from, QMetaType toType, 
         }
     }
 
-#ifndef QT_BOOTSTRAPPED
-# ifndef QT_NO_VARIANT
     if (toTypeId == QVariantPair && convertIterableToVariantPair(fromType, from, to))
         return true;
 
@@ -2414,7 +2400,6 @@ bool QMetaType::convert(QMetaType fromType, const void *from, QMetaType toType, 
 
     if (toTypeId == QVariantHash && convertIterableToVariantHash(fromType, from, to))
         return true;
-#  endif
 
     if (toTypeId == qMetaTypeId<QSequentialIterable>())
         return convertToSequentialIterable(fromType, from, to);
@@ -2423,9 +2408,6 @@ bool QMetaType::convert(QMetaType fromType, const void *from, QMetaType toType, 
         return convertToAssociativeIterable(fromType, from, to);
 
     return convertMetaObject(fromType, from, toType, to);
-#else
-    return false;
-#endif
 }
 
 /*!
@@ -2445,7 +2427,6 @@ bool QMetaType::view(QMetaType fromType, void *from, QMetaType toType, void *to)
     if (f)
         return (*f)(from, to);
 
-#ifndef QT_BOOTSTRAPPED
     if (toTypeId == qMetaTypeId<QSequentialIterable>())
         return viewAsSequentialIterable(fromType, from, to);
 
@@ -2453,9 +2434,6 @@ bool QMetaType::view(QMetaType fromType, void *from, QMetaType toType, void *to)
         return viewAsAssociativeIterable(fromType, from, to);
 
     return convertMetaObject(fromType, from, toType, to);
-#else
-    return false;
-#endif
 }
 
 /*!
@@ -2487,7 +2465,6 @@ bool QMetaType::canView(QMetaType fromType, QMetaType toType)
     if (f)
         return true;
 
-#ifndef QT_BOOTSTRAPPED
     if (toTypeId == qMetaTypeId<QSequentialIterable>())
         return canImplicitlyViewAsSequentialIterable(fromType);
 
@@ -2496,7 +2473,6 @@ bool QMetaType::canView(QMetaType fromType, QMetaType toType)
 
     if (canConvertMetaObject(fromType, toType))
         return true;
-#endif
 
     return false;
 }
@@ -2592,14 +2568,11 @@ bool QMetaType::canConvert(QMetaType fromType, QMetaType toType)
     if (f)
         return true;
 
-#ifndef QT_BOOTSTRAPPED
     if (toTypeId == qMetaTypeId<QSequentialIterable>())
         return canConvertToSequentialIterable(fromType);
 
     if (toTypeId == qMetaTypeId<QAssociativeIterable>())
         return canConvertToAssociativeIterable(fromType);
-#endif
-#ifndef QT_NO_VARIANT
     if (toTypeId == QVariantList
             && canConvert(fromType, QMetaType::fromType<QSequentialIterable>())) {
         return true;
@@ -2613,7 +2586,6 @@ bool QMetaType::canConvert(QMetaType fromType, QMetaType toType)
     if (toTypeId == QVariantPair && hasRegisteredConverterFunction(
                     fromType, QMetaType::fromType<QtMetaTypePrivate::QPairVariantInterfaceImpl>()))
         return true;
-#endif
 
     if (fromType.flags() & IsEnumeration) {
         if (toTypeId == QString || toTypeId == QByteArray)
@@ -2627,10 +2599,8 @@ bool QMetaType::canConvert(QMetaType fromType, QMetaType toType)
     }
     if (toTypeId == Nullptr && fromType.flags() & IsPointer)
         return true;
-#ifndef QT_BOOTSTRAPPED
     if (canConvertMetaObject(fromType, toType))
         return true;
-#endif
 
     return false;
 }
@@ -2727,6 +2697,7 @@ bool QtPrivate::hasRegisteredMutableViewFunctionToIterableMetaAssociation(QMetaT
     const QMetaType to = QMetaType::fromType<QIterable<QMetaAssociation>>();
     return QMetaType::hasRegisteredMutableViewFunction(m, to);
 }
+#endif // !QT_BOOTSTRAPPED
 
 /*!
     \fn const char *QMetaType::typeName(int typeId)
