@@ -101,6 +101,12 @@ class QCborContainerPrivate : public QSharedData
     ~QCborContainerPrivate();
 
 public:
+    QCborContainerPrivate() = default;
+    QCborContainerPrivate(const QCborContainerPrivate &) = default;
+    QCborContainerPrivate(QCborContainerPrivate &&) = default;
+    QCborContainerPrivate &operator=(const QCborContainerPrivate &) = delete;
+    QCborContainerPrivate &operator=(QCborContainerPrivate &&) = delete;
+
     enum ContainerDisposition { CopyContainer, MoveContainer };
 
     QByteArray::size_type usedData = 0;
