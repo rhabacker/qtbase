@@ -4011,8 +4011,8 @@ void tst_QAccessibility::accelerators()
     window->show();
 
     QAccessibleInterface *accLineEdit = QAccessible::queryAccessibleInterface(le);
-    QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QKeySequence(Qt::ALT).toString(QKeySequence::NativeText) + QLatin1String("L"));
-    QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QKeySequence(Qt::ALT).toString(QKeySequence::NativeText) + QLatin1String("L"));
+    QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QKeySequence(Qt::ALT | Qt::Key_L).toString(QKeySequence::NativeText));
+    QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QKeySequence(Qt::ALT | Qt::Key_L).toString(QKeySequence::NativeText));
     label->setText(tr("Q &"));
     QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QString());
     label->setText(tr("Q &&"));
@@ -4020,7 +4020,7 @@ void tst_QAccessibility::accelerators()
     label->setText(tr("Q && A"));
     QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QString());
     label->setText(tr("Q &&&A"));
-    QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QKeySequence(Qt::ALT).toString(QKeySequence::NativeText) + QLatin1String("A"));
+    QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QKeySequence(Qt::ALT | Qt::Key_A).toString(QKeySequence::NativeText));
     label->setText(tr("Q &&A"));
     QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QString());
 
@@ -4028,7 +4028,7 @@ void tst_QAccessibility::accelerators()
     QTest::ignoreMessage(QtWarningMsg, "QKeySequence::mnemonic: \"Q &A&B\" contains multiple occurrences of '&'");
 #endif
     label->setText(tr("Q &A&B"));
-    QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QKeySequence(Qt::ALT).toString(QKeySequence::NativeText) + QLatin1String("A"));
+    QCOMPARE(accLineEdit->text(QAccessible::Accelerator), QKeySequence(Qt::ALT | Qt::Key_A).toString(QKeySequence::NativeText));
 
 #if defined(Q_OS_UNIX)
     QCoreApplication::processEvents();
