@@ -6671,7 +6671,7 @@ void tst_QString::arg()
     QTest::ignoreMessage(QtWarningMsg, nonAsciiArgWarning);
     QCOMPARE( QString("%2²%1").arg("a").arg("b"), QString("ba") );
 #else
-    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: %¹, foo");
+    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"%¹\", \"foo\"");
     QCOMPARE(u"%¹"_s.arg(foo), u"%¹");
     QCOMPARE(u"%¹%1"_s.arg(foo), u"%¹foo");
     QCOMPARE(u"%1²"_s.arg(u"E=mc"_s), u"E=mc²");
@@ -6725,10 +6725,14 @@ void tst_QString::arg()
 #endif
     QCOMPARE(s4.arg(u8'a'), QLatin1String("[a]"));
 
-    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: , foo");
+    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"\", \"foo\"");
     QCOMPARE(QString().arg(foo), QString());
     QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"\", 0");
     QCOMPARE( QString().arg(0), QString() );
+    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"\", 0");
+    QCOMPARE( QString().arg(0U), QString() );
+    QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"\", 0");
+    QCOMPARE( QString().arg(0.0), QString() );
     QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \"\", 0");
     QCOMPARE(QString(u""_s).arg(0), u""_s);
     QTest::ignoreMessage(QtWarningMsg, "QString::arg: Argument missing: \" \", 0");

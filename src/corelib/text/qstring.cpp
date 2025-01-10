@@ -8765,7 +8765,7 @@ QString QString::arg_impl(QAnyStringView a, int fieldWidth, QChar fillChar) cons
     ArgEscapeData d = findArgEscapes(*this);
 
     if (Q_UNLIKELY(d.occurrences == 0)) {
-        qWarning("QString::arg: Argument missing: %ls, %ls", qUtf16Printable(*this),
+        qWarning("QString::arg: Argument missing: \"%ls\", \"%ls\"", qUtf16Printable(*this),
                   qUtf16Printable(a.toString()));
         return *this;
     }
@@ -8905,7 +8905,7 @@ QString QString::arg_impl(double a, int fieldWidth, char format, int precision, 
     ArgEscapeData d = findArgEscapes(*this);
 
     if (d.occurrences == 0) {
-        qWarning("QString::arg: Argument missing: %s, %g", toLocal8Bit().data(), a);
+        qWarning("QString::arg: Argument missing: \"%ls\", %g", qUtf16Printable(*this), a);
         return *this;
     }
 
