@@ -434,8 +434,8 @@ QCoreApplicationPrivate::QCoreApplicationPrivate(int &aargc, char **aargv)
 #if defined(Q_OS_WIN)
     if (!isArgvModified(argc, argv)) {
         origArgc = argc;
-        origArgv = new char *[argc];
-        std::copy(argv, argv + argc, QT_MAKE_CHECKED_ARRAY_ITERATOR(origArgv, argc));
+        origArgv = q20::make_unique_for_overwrite<char *[]>(argc);
+        std::copy(argv, argv + argc, origArgv.get());
     }
 #endif // Q_OS_WIN
 
@@ -459,7 +459,6 @@ QCoreApplicationPrivate::~QCoreApplicationPrivate()
     cleanupThreadData();
 #endif
 #if defined(Q_OS_WIN) && !defined(QT_BOOTSTRAPPED)
-    delete [] origArgv;
     cleanupDebuggingConsole();
 #endif
     QCoreApplicationPrivate::clearApplicationFilePath();
