@@ -48,7 +48,7 @@ class Q_CORE_EXPORT QCoreApplicationPrivate
     Q_DECLARE_PUBLIC(QCoreApplication)
 
 public:
-    enum Type {
+    enum Type : quint8 {
         Tty,
         Gui
     };
