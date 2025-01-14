@@ -252,10 +252,14 @@ void tst_QChronoTimer::remainingTimeInitial_data()
     QTest::addRow("precisetiemr-0ns") << 0ns << Qt::PreciseTimer;
     QTest::addRow("precisetimer-1ms") << nanoseconds{1ms} << Qt::PreciseTimer;
     QTest::addRow("precisetimer-10ms") <<nanoseconds{10ms} << Qt::PreciseTimer;
+    QTest::addRow("precisetimer-25days") << nanoseconds{25 * 24h} << Qt::PreciseTimer;
+    QTest::addRow("precisetimer-50days") << nanoseconds{50 * 24h} << Qt::PreciseTimer;
 
     QTest::addRow("coarsetimer-0ns") << 0ns << Qt::CoarseTimer;
     QTest::addRow("coarsetimer-1ms") << nanoseconds{1ms} << Qt::CoarseTimer;
     QTest::addRow("coarsetimer-10ms") << nanoseconds{10ms} << Qt::CoarseTimer;
+    QTest::addRow("coarsetimer-25days") << nanoseconds{25 * 24h} << Qt::CoarseTimer;
+    QTest::addRow("coarsetimer-50days") << nanoseconds{50 * 24h} << Qt::CoarseTimer;
 }
 
 void tst_QChronoTimer::remainingTimeInitial()
@@ -272,7 +276,14 @@ void tst_QChronoTimer::remainingTimeInitial()
 
     const std::chrono::nanoseconds rt = timer.remainingTime();
     QCOMPARE_GE(rt, 0ns);
-    QCOMPARE_LE(rt, startTimeNs);
+    if (timerType != Qt::PreciseTimer) {
+        // For coarse timers the calculated interval might be up to 5% larger
+        // then specified
+        auto largerStartTime = std::chrono::nanoseconds{startTimeNs + startTimeNs / 20};
+        QCOMPARE_LE(rt, largerStartTime);
+    } else {
+        QCOMPARE_LE(rt, startTimeNs);
+    }
 }
 
 void tst_QChronoTimer::remainingTimeDuringActivation_data()
