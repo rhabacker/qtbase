@@ -26,6 +26,8 @@
 
 QT_BEGIN_NAMESPACE
 
+Q_STATIC_LOGGING_CATEGORY(lcEmojiSegmenter, "qt.text.emojisegmenter")
+
 static const float smallCapsFraction = 0.7f;
 
 namespace {
@@ -1989,6 +1991,8 @@ void QTextEngine::itemize() const
 #if !defined(QT_NO_EMOJISEGMENTER)
     const bool disableEmojiSegmenter = QFontEngine::disableEmojiSegmenter() || option.flags().testFlag(QTextOption::DisableEmojiParsing);
 
+    qCDebug(lcEmojiSegmenter) << "Emoji segmenter disabled:" << disableEmojiSegmenter;
+
     QVarLengthArray<CharacterCategory> categorizedString;
     if (!disableEmojiSegmenter) {
         // Parse emoji sequences
@@ -2033,6 +2037,10 @@ void QTextEngine::itemize() const
                 categorizedString.append(CharacterCategory::EMOJI_TEXT_PRESENTATION);
             else
                 categorizedString.append(CharacterCategory::OTHER);
+
+            qCDebug(lcEmojiSegmenter) << "Checking character" << (isSurrogate ? (i - 1) : i)
+                                      << ", ucs4 ==" << ucs4
+                                      << ", category:" << categorizedString.last();
         }
     }
 #endif
@@ -2054,8 +2062,14 @@ void QTextEngine::itemize() const
     while (uc < e) {
 #if !defined(QT_NO_EMOJISEGMENTER)
         // Find next emoji sequence
-        if (!disableEmojiSegmenter && categoryIt == nextIt)
+        if (!disableEmojiSegmenter && categoryIt == nextIt) {
             nextIt = scan_emoji_presentation(categoryIt, categoriesEnd, &isEmoji, &hasVs);
+
+            qCDebug(lcEmojiSegmenter) << "Checking character" << (categoryIt - categoriesStart)
+                                      << ", sequence length:" << (nextIt - categoryIt)
+                                      << ", is emoji sequence:" << isEmoji;
+
+        }
 #endif
 
         switch (*uc) {
