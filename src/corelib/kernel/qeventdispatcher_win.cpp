@@ -801,9 +801,9 @@ QEventDispatcherWin32::Duration QEventDispatcherWin32::remainingTime(Qt::TimerId
         // timer found, return time to wait
         using namespace std::chrono;
         using namespace std::chrono_literals;
-        const Duration currentTimeNs = steady_clock::now().time_since_epoch();
-        const Duration timeoutNs = Duration{t->timeout * 1ms};
-        return timeoutNs > currentTimeNs ? timeoutNs - currentTimeNs : 0ns;
+        const auto currentTimeMs = duration_cast<milliseconds>(steady_clock::now().time_since_epoch());
+        const auto timeoutMs = t->timeout * 1ms;
+        return timeoutMs > currentTimeMs ? milliseconds{timeoutMs - currentTimeMs} : 0ms;
     }
 
 #ifndef QT_NO_DEBUG
