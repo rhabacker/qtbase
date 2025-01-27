@@ -146,6 +146,9 @@ void QCheckBox::initStyleOption(QStyleOptionButton *option) const
     option->text = d->text;
     option->icon = d->icon;
     option->iconSize = iconSize();
+    QStyleOptionButtonV2 *optV2 = qstyleoption_cast<QStyleOptionButtonV2*>(option);
+    if (optV2)
+        optV2->alignment = d->alignment;
 }
 
 /*!
@@ -261,7 +264,7 @@ QSize QCheckBox::sizeHint() const
         return d->sizeHint;
     ensurePolished();
     QFontMetrics fm = fontMetrics();
-    QStyleOptionButton opt;
+    QStyleOptionButtonV2 opt;
     initStyleOption(&opt);
     QSize sz = style()->itemTextRect(fm, QRect(), Qt::TextShowMnemonic, false,
                                      text()).size();
@@ -286,7 +289,7 @@ QSize QCheckBox::minimumSizeHint() const
 void QCheckBox::paintEvent(QPaintEvent *)
 {
     QStylePainter p(this);
-    QStyleOptionButton opt;
+    QStyleOptionButtonV2 opt;
     initStyleOption(&opt);
     p.drawControl(QStyle::CE_CheckBox, opt);
 }

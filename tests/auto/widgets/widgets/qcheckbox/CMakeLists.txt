@@ -18,3 +18,12 @@ qt_internal_add_test(tst_qcheckbox
         Qt::Gui
         Qt::Widgets
 )
+
+qt_internal_add_test(qcheckbox
+    GUI
+    SOURCES
+        main.cpp
+    LIBRARIES
+        Qt::Gui
+        Qt::Widgets
+)

@@ -29,6 +29,7 @@ class Q_WIDGETS_EXPORT QAbstractButton : public QWidget
 #ifndef QT_NO_SHORTCUT
     Q_PROPERTY(QKeySequence shortcut READ shortcut WRITE setShortcut)
 #endif
+    Q_PROPERTY(Qt::Alignment alignment READ alignment WRITE setAlignment)
     Q_PROPERTY(bool checkable READ isCheckable WRITE setCheckable)
     Q_PROPERTY(bool checked READ isChecked WRITE setChecked NOTIFY toggled USER true)
     Q_PROPERTY(bool autoRepeat READ autoRepeat WRITE setAutoRepeat)
@@ -53,6 +54,8 @@ public:
     void setShortcut(const QKeySequence &key);
     QKeySequence shortcut() const;
 #endif
+    void setAlignment(Qt::Alignment);
+    Qt::Alignment alignment() const;
 
     void setCheckable(bool);
     bool isCheckable() const;

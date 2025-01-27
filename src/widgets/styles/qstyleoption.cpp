@@ -1005,6 +1005,19 @@ QStyleOptionButton::QStyleOptionButton(int version)
 */
 
 
+QStyleOptionButtonV2::QStyleOptionButtonV2()
+    : QStyleOptionButton(QStyleOptionButtonV2::Version), alignment(Qt::AlignLeft)
+{
+}
+
+/*!
+    \internal
+*/
+QStyleOptionButtonV2::QStyleOptionButtonV2(int version)
+    : QStyleOptionButton(version), alignment(Qt::AlignLeft)
+{
+}
+
 #if QT_CONFIG(toolbar)
 /*!
     \class QStyleOptionToolBar

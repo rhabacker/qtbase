@@ -3,4 +3,5 @@ SUBDIRS = bigmenucreator \
     defaultUpMenuBar \
     multiscreen-menus \
     qtoolbutton/menuOnMultiScreens \
-    qtabbar
+    qtabbar \
+    qcheckbox

@@ -141,6 +141,9 @@ void QRadioButton::initStyleOption(QStyleOptionButton *option) const
     if (testAttribute(Qt::WA_Hover) && underMouse()) {
         option->state.setFlag(QStyle::State_MouseOver, d->hovering);
     }
+    QStyleOptionButtonV2 *optV2 = qstyleoption_cast<QStyleOptionButtonV2*>(option);
+    if (optV2)
+        optV2->alignment = d->alignment;
 }
 
 /*!
@@ -152,7 +155,7 @@ QSize QRadioButton::sizeHint() const
     if (d->sizeHint.isValid())
         return d->sizeHint;
     ensurePolished();
-    QStyleOptionButton opt;
+    QStyleOptionButtonV2 opt;
     initStyleOption(&opt);
     QSize sz = style()->itemTextRect(fontMetrics(), QRect(), Qt::TextShowMnemonic,
                                      false, text()).size();
@@ -175,7 +178,7 @@ QSize QRadioButton::minimumSizeHint() const
 */
 bool QRadioButton::hitButton(const QPoint &pos) const
 {
-    QStyleOptionButton opt;
+    QStyleOptionButtonV2 opt;
     initStyleOption(&opt);
     return style()->subElementRect(QStyle::SE_RadioButtonClickRect, &opt, this).contains(pos);
 }
@@ -205,7 +208,7 @@ void QRadioButton::mouseMoveEvent(QMouseEvent *e)
 void QRadioButton::paintEvent(QPaintEvent *)
 {
     QStylePainter p(this);
-    QStyleOptionButton opt;
+    QStyleOptionButtonV2 opt;
     initStyleOption(&opt);
     p.drawControl(QStyle::CE_RadioButton, opt);
 }

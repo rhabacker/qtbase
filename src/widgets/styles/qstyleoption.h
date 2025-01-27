@@ -235,6 +235,23 @@ protected:
     QStyleOptionButton(int version);
 };
 
+// ### Qt7: merge with QStyleOptionButton
+class Q_WIDGETS_EXPORT QStyleOptionButtonV2 : public QStyleOptionButton
+{
+public:
+    enum StyleOptionType { Type = SO_Button };
+    enum StyleOptionVersion { Version = 2 };
+
+    QStyleOptionButtonV2();
+    QStyleOptionButtonV2(const QStyleOptionButtonV2 &other) : QStyleOptionButton(Version) { *this = other; }
+    QStyleOptionButtonV2 &operator=(const QStyleOptionButtonV2 &) = default;
+
+    Qt::Alignment alignment = Qt::AlignLeft;
+
+protected:
+    QStyleOptionButtonV2(int version);
+};
+
 Q_DECLARE_OPERATORS_FOR_FLAGS(QStyleOptionButton::ButtonFeatures)
 
 #if QT_CONFIG(tabbar)

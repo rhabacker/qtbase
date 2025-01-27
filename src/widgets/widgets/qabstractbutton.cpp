@@ -145,6 +145,7 @@ QAbstractButtonPrivate::QAbstractButtonPrivate(QSizePolicy::ControlType type)
 #if QT_CONFIG(buttongroup)
     group(nullptr),
 #endif
+    alignment(Qt::AlignLeft),
     autoRepeatDelay(AUTO_REPEAT_DELAY),
     autoRepeatInterval(AUTO_REPEAT_INTERVAL),
     controlType(type)
@@ -738,6 +739,33 @@ int QAbstractButton::autoRepeatInterval() const
 }
 
 
+/*!
+    \property QAbstractButton::alignment
+    \brief the alignment of the button
+
+    Possible Values are Qt::AlignLeft, Qt::AlignRight, and Qt::AlignHCenter.
+
+    By default, the alignment is Qt::AlignLeft
+
+    Attempting to set the alignment to an illegal flag combination
+    does nothing.
+
+    \sa Qt::Alignment
+*/
+
+Qt::Alignment QAbstractButton::alignment() const
+{
+    Q_D(const QAbstractButton);
+
+    return (Qt::Alignment)d->alignment;
+}
+
+void QAbstractButton::setAlignment(Qt::Alignment flag)
+{
+    Q_D(QAbstractButton);
+
+    d->alignment = flag;
+}
 
 /*!
 \property QAbstractButton::autoExclusive

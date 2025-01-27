@@ -15,6 +15,7 @@ class tst_QCheckBox : public QObject
 private slots:
     void initTestCase();
 
+    void setAlignment();
     void setChecked();
     void setCheckedSignal();
     void setTriState();
@@ -38,6 +39,27 @@ void tst_QCheckBox::initTestCase()
 }
 
 // ***************************************************
+
+
+void tst_QCheckBox::setAlignment()
+{
+    QCheckBox testWidget;
+    QCheckBox box(tr("CheckBox's sizeHint is the same as it's minimumSizeHint"));
+     testWidget.setAlignment(Qt::AlignLeft);
+     QVERIFY(testWidget.alignment() == Qt::AlignLeft);
+     testWidget.setAlignment(Qt::AlignRight);
+     QVERIFY(testWidget.alignment() == Qt::AlignRight);
+     testWidget.setAlignment(Qt::AlignHCenter);
+     QVERIFY(testWidget.alignment() == Qt::AlignHCenter);
+     testWidget.setAlignment(Qt::AlignTop);
+     QVERIFY(testWidget.alignment() == Qt::AlignTop);
+     testWidget.setAlignment(Qt::AlignBottom);
+     QVERIFY(testWidget.alignment() == Qt::AlignBottom);
+     testWidget.setAlignment(Qt::AlignVCenter);
+     QVERIFY(testWidget.alignment() == Qt::AlignVCenter);
+
+     // How to add checks for positions
+}
 
 void tst_QCheckBox::setChecked()
 {

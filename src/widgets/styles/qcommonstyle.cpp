@@ -1408,7 +1408,25 @@ void QCommonStyle::drawControl(ControlElement element, const QStyleOption *opt,
         break;
     case CE_RadioButton:
     case CE_CheckBox:
-        if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(opt)) {
+        if (const QStyleOptionButtonV2 *btn = qstyleoption_cast<const QStyleOptionButtonV2 *>(opt)) {
+            bool isRadio = (element == CE_RadioButton);
+            QStyleOptionButtonV2 subopt = *btn;
+            subopt.rect = subElementRect(isRadio ? SE_RadioButtonIndicator
+                                                 : SE_CheckBoxIndicator, btn, widget);
+            proxy()->drawPrimitive(isRadio ? PE_IndicatorRadioButton : PE_IndicatorCheckBox,
+                          &subopt, p, widget);
+            subopt.rect = subElementRect(isRadio ? SE_RadioButtonContents
+                                                 : SE_CheckBoxContents, btn, widget);
+            proxy()->drawControl(isRadio ? CE_RadioButtonLabel : CE_CheckBoxLabel, &subopt, p, widget);
+            if (btn->state & State_HasFocus) {
+                QStyleOptionFocusRect fropt;
+                fropt.QStyleOption::operator=(*btn);
+                fropt.rect = subElementRect(isRadio ? SE_RadioButtonFocusRect
+                                                    : SE_CheckBoxFocusRect, btn, widget);
+                proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, p, widget);
+            }
+        }
+        else if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(opt)) {
             bool isRadio = (element == CE_RadioButton);
             QStyleOptionButton subopt = *btn;
             subopt.rect = subElementRect(isRadio ? SE_RadioButtonIndicator
@@ -1429,7 +1447,25 @@ void QCommonStyle::drawControl(ControlElement element, const QStyleOption *opt,
         break;
     case CE_RadioButtonLabel:
     case CE_CheckBoxLabel:
-        if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(opt)) {
+        if (const QStyleOptionButtonV2 *btn = qstyleoption_cast<const QStyleOptionButtonV2 *>(opt)) {
+            bool isRadio = (element == CE_RadioButton);
+            QStyleOptionButtonV2 subopt = *btn;
+            subopt.rect = subElementRect(isRadio ? SE_RadioButtonIndicator
+                                                 : SE_CheckBoxIndicator, btn, widget);
+            proxy()->drawPrimitive(isRadio ? PE_IndicatorRadioButton : PE_IndicatorCheckBox,
+                          &subopt, p, widget);
+            subopt.rect = subElementRect(isRadio ? SE_RadioButtonContents
+                                                 : SE_CheckBoxContents, btn, widget);
+            proxy()->drawControl(isRadio ? CE_RadioButtonLabel : CE_CheckBoxLabel, &subopt, p, widget);
+            if (btn->state & State_HasFocus) {
+                QStyleOptionFocusRect fropt;
+                fropt.QStyleOption::operator=(*btn);
+                fropt.rect = subElementRect(isRadio ? SE_RadioButtonFocusRect
+                                                    : SE_CheckBoxFocusRect, btn, widget);
+                proxy()->drawPrimitive(PE_FrameFocusRect, &fropt, p, widget);
+            }
+        }
+        else if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(opt)) {
             int alignment = visualAlignment(btn->direction, Qt::AlignLeft | Qt::AlignVCenter);
 
             if (!proxy()->styleHint(SH_UnderlineShortcut, btn, widget))
@@ -2487,9 +2523,15 @@ QRect QCommonStyle::subElementRect(SubElement sr, const QStyleOption *opt,
             // Deal with the logical first, then convert it back to screen coords.
             QRect ir = visualRect(opt->direction, opt->rect,
                                   subElementRect(SE_CheckBoxIndicator, opt, widget));
+            const QStyleOptionButtonV2 *optV2 = qstyleoption_cast<const QStyleOptionButtonV2*>(opt);
             int spacing = proxy()->pixelMetric(PM_CheckBoxLabelSpacing, opt, widget);
             r.setRect(ir.right() + spacing, opt->rect.y(), opt->rect.width() - ir.width() - spacing,
                       opt->rect.height());
+            if (optV2) {
+                QRect s = QStyle::alignedRect(optV2->direction, optV2->alignment, ir.size(), r);
+                qDebug() << ir << r << s;
+                //r = s;
+            }
             r = visualRect(opt->direction, opt->rect, r);
         }
         break;

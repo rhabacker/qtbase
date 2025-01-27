@@ -50,6 +50,7 @@ public:
     QBasicTimer repeatTimer;
     QBasicTimer animateTimer;
 
+    Qt::Alignment alignment;
     int autoRepeatDelay, autoRepeatInterval;
 
     QSizePolicy::ControlType controlType;
